@@ -45,7 +45,7 @@ describe Pagoda::Client do
       </app>
     }
     stub_api_request(:get, "/apps/testapp").to_return(:body => stub)
-    @client.info.should == {
+    @client.info('testapp').should == {
       :name           => 'testapp',
       :ip             => '24.166.177.210',
       :instances      => '4',
@@ -84,6 +84,26 @@ describe Pagoda::Client do
   it "should rollback an app's code base" do
     stub_api_request(:get, '/apps/testapp/rollback')
     @client.rollback('testapp')
+  end
+  
+  it "should list ssh keys" do
+    
+  end
+  
+  it "should add ssh key" do
+    
+  end
+  
+  it "should remove an ssh key" do
+    
+  end
+  
+  it "should add a collaborator" do
+    
+  end
+  
+  it "should remove a collaborator" do
+    
   end
   
 end
