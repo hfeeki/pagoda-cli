@@ -8,19 +8,6 @@ RSpec::Core::RakeTask.new('spec') do |t|
   t.rspec_opts = ['--colour --format progress']
 end
 
-desc "Print specdocs"
-RSpec::Core::RakeTask.new(:doc) do |t|
-  t.rspec_opts = ["--format", "specdoc", "--dry-run"]
-  # t.spec_files = FileList['spec/*_spec.rb']
-end
-
-desc "Generate RCov code coverage report"
-RSpec::Core::RakeTask.new('rcov') do |t|
-  # t.spec_files = FileList['spec/*_spec.rb']
-  t.rcov         = true
-  t.rcov_opts    = ['--exclude', 'examples']
-end
-
 task :default => :spec
 
 Jeweler::Tasks.new do |gem|
