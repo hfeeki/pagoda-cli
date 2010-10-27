@@ -53,16 +53,12 @@ class Pagoda::Client
   
   def list
     doc = xml(get("/apps").to_s)
-    doc.elements['apps'].elements.to_a('//app/').inject([]) do |list, app|
-      list << app.elements['name'].text
-    end
+    doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app.elements['name'].text }
   end
   
   def create(app)
     doc = xml(post("/apps", {'name' => 'testapp'}).to_s)
-    doc.elements.to_a('//app/*').inject({}) do |hash, element|
-      hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash
-    end
+    doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def destroy(app)
@@ -71,9 +67,7 @@ class Pagoda::Client
   
   def keys
     doc = xml(get('/keys').to_s)
-    doc.elements.to_a('//keys/key').inject([]) do |list, key|
-      list << key.text
-    end
+    doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
   end
   
   def add_key(key)
@@ -121,7 +115,7 @@ class Pagoda::Client
     response = resource(uri).send(*args)
   end
   
-  def pagoda_headers   # :nodoc:
+  def pagoda_headers
     {
       'User-Agent'           => self.class.gem_version_string,
       'X-Ruby-Version'       => RUBY_VERSION,
@@ -132,6 +126,5 @@ class Pagoda::Client
   def xml(raw)   # :nodoc:
     REXML::Document.new(raw)
   end
-  
   
 end
