@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/helper"
+require "#{File.dirname(__FILE__)}/base"
 require "#{File.dirname(__FILE__)}/../lib/pagoda/client"
 
 describe Pagoda::Client do

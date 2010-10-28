@@ -2,6 +2,7 @@ require 'pagoda/version'
 require 'rexml/document'
 require 'rest_client'
 require 'uri'
+require 'json/pure' unless {}.respond_to?(:to_json)
 
 class Pagoda::Client
 

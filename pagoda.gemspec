@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "bin/pagoda",
      "lib/pagoda.rb",
      "lib/pagoda/client.rb",
+     "lib/pagoda/command.rb",
      "lib/pagoda/version.rb",
      "spec/client_spec.rb",
      "spec/helper.rb"
