@@ -15,7 +15,7 @@ def prepare_command(klass)
   command = klass.new(['--app', 'myapp'])
   command.stub!(:args).and_return([])
   command.stub!(:display)
-  # command.stub!(:heroku).and_return(mock('heroku client', :host => 'heroku.com'))
+  command.stub!(:pagoda).and_return(mock('pagoda client', :host => 'pagoda.com'))
   command.stub!(:extract_app).and_return('myapp')
   command
 end

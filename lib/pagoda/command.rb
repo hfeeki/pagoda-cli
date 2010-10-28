@@ -6,6 +6,7 @@ Dir["#{File.dirname(__FILE__)}/commands/*.rb"].each { |c| require c }
 module Pagoda
   module Command
     class InvalidCommand < RuntimeError; end
+    class CommandFailed  < RuntimeError; end
     
     class << self
       

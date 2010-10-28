@@ -1,5 +1,5 @@
 module Pagoda::Command
-  class Auth
+  class Auth < Base
     attr_accessor :credentials
 
     def client
