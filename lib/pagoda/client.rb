@@ -6,7 +6,7 @@ require 'json/pure' unless {}.respond_to?(:to_json)
 
 class Pagoda::Client
 
-  attr_reader :user, :password
+  attr_reader :user, :password, :host
 
   class << self
     def version
@@ -18,9 +18,10 @@ class Pagoda::Client
     end
   end
   
-  def initialize(user, password)
+  def initialize(user, password, host='pagodagrid.com')
     @user     = user
     @password = password
+    @host     = host
   end
   
   def info(app)
@@ -81,6 +82,10 @@ class Pagoda::Client
   
   def remove_all_keys
     delete("/keys").to_s
+  end
+  
+  def on_warning(&blk)
+    @warning_callback = blk
   end
   
   protected

@@ -8,6 +8,8 @@ module Pagoda
     class InvalidCommand < RuntimeError; end
     class CommandFailed  < RuntimeError; end
     
+    extend Pagoda::Helpers
+    
     class << self
       
       def run(command, args, retries=0)
@@ -15,7 +17,7 @@ module Pagoda
           run_internal 'auth:reauthorize', args.dup if retries > 0
           run_internal(command, args.dup)
         rescue InvalidCommand
-          error "Unknown command. Run 'pagoda help' for usage information."
+          error "Unknown command: #{command}. Run 'pagoda help' for usage information."
         rescue RestClient::Unauthorized
           if retries < 3
             STDERR.puts "Authentication failure"
@@ -27,6 +29,7 @@ module Pagoda
           error extract_not_found(e.http_body)
         rescue RestClient::RequestFailed => e
           error extract_error(e.http_body) unless e.http_code == 402
+          retry if run_internal('account:confirm_billing', args.dup)
         rescue RestClient::RequestTimeout
           error "API request timed out. Please try again, or contact support@pagodagrid.com if this issue persists."
         rescue CommandFailed => e
