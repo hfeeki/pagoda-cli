@@ -30,6 +30,10 @@ Gem::Specification.new do |s|
      "lib/pagoda/commands/app.rb",
      "lib/pagoda/commands/auth.rb",
      "lib/pagoda/commands/base.rb",
+     "lib/pagoda/commands/collaborators.rb",
+     "lib/pagoda/commands/deploy.rb",
+     "lib/pagoda/commands/help.rb",
+     "lib/pagoda/commands/keys.rb",
      "lib/pagoda/helpers.rb",
      "lib/pagoda/version.rb",
      "spec/base.rb",
@@ -37,7 +41,9 @@ Gem::Specification.new do |s|
      "spec/command_spec.rb",
      "spec/commands/app_spec.rb",
      "spec/commands/auth_spec.rb",
-     "spec/commands/base_spec.rb"
+     "spec/commands/base_spec.rb",
+     "spec/commands/collaborators_spec.rb",
+     "spec/commands/keys_spec.rb"
   ]
   s.homepage = %q{http://pagodagrid.com/}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -50,7 +56,9 @@ Gem::Specification.new do |s|
      "spec/command_spec.rb",
      "spec/commands/app_spec.rb",
      "spec/commands/auth_spec.rb",
-     "spec/commands/base_spec.rb"
+     "spec/commands/base_spec.rb",
+     "spec/commands/collaborators_spec.rb",
+     "spec/commands/keys_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
