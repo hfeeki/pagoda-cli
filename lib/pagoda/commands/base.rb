@@ -61,7 +61,7 @@ module Pagoda
           end
         end
       end
-
+      
       def git_remotes(base_dir)
         git_config = "#{base_dir}/.git/config"
         unless File.exists?(git_config)

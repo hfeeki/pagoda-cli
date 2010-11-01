@@ -104,5 +104,72 @@ module Pagoda::Command
       
     end
     
+    it "should require app name" do
+      @cli.stub!(:args).and_return([])
+      @cli.stub!(:error)
+      @cli.should_receive(:error).with("Please specify an app name: pagoda init appname")
+      @cli.init
+    end
+    
+    it "should warn and exit when if specified app doesn't exist" do
+      @cli.stub!(:args).and_return(['myapp'])
+      @cli.pagoda.stub!(:list).and_return(['app1', 'app2'])
+      @cli.stub!(:error)
+      @cli.should_receive(:error).with("myapp doesn't match any of the existing apps.\nYou must first create myapp if it doesn't already exist. # pagoda create myapp\nList all available apps # pagoda list")
+      @cli.init
+    end
+    
+    it "should confirm root directory" do
+      @cli.stub!(:args).and_return(['myapp'])
+      @cli.pagoda.stub!(:list).and_return(['myapp'])
+      @cli.stub!(:confirm).and_return(false)
+      @cli.stub!(:error)
+      @cli.should_receive(:confirm).with("Is this myapp's root directory? (y/n)")
+      @cli.should_receive(:error).with("Please change into myapp's root directory and try again.")
+      @cli.init
+    end
+    
+    it "should init git repo if not already created" do
+      @cli.stub!(:args).and_return(['myapp'])
+      @cli.pagoda.stub!(:list).and_return(['myapp'])
+      @cli.stub!(:confirm).and_return(true)
+      @cli.stub!(:is_git?).and_return(false)
+      @cli.stub!(:init_app)
+      @cli.should_receive(:init_app)
+      @cli.should_receive(:add_remote)
+      @cli.should_receive(:display).with("myapp is ready for deployment! # pagoda deploy")
+      @cli.init
+    end
+    
+    it "should not init already existing repo" do
+      @cli.stub!(:args).and_return(['myapp'])
+      @cli.pagoda.stub!(:list).and_return(['myapp'])
+      @cli.stub!(:confirm).and_return(true)
+      @cli.stub!(:is_git?).and_return(true)
+      @cli.should_not_receive(:init_app)
+      @cli.should_receive(:add_remote)
+      @cli.should_receive(:display).with("myapp is ready for deployment! # pagoda deploy")
+      @cli.init
+    end
+    
+    it "should confirm before destroying app" do
+      @cli.stub!(:args).and_return(['--app', 'myapp'])
+      @cli.stub!(:confirm).and_return(false)
+      @cli.should_receive(:confirm).with("Are you sure you want to destroy myapp? This cannot be undone! (y/n)")
+      @cli.pagoda.stub!(:destroy)
+      @cli.pagoda.should_not_receive(:destroy)
+      @cli.destroy
+    end
+    
+    it "should destroy app after confirmation" do
+      @cli.stub!(:args).and_return(['--app', 'myapp'])
+      @cli.stub!(:confirm).and_return(true)
+      @cli.should_receive(:confirm).with("Are you sure you want to destroy myapp? This cannot be undone! (y/n)")
+      @cli.pagoda.stub!(:destroy)
+      @cli.pagoda.should_receive(:destroy)
+      @cli.should_receive(:display).with("myapp permanently destroyed.")
+      @cli.destroy
+    end
+    
   end
 end

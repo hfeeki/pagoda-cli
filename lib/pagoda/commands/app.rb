@@ -28,15 +28,31 @@ module Pagoda::Command
     end
     
     # 
-    # Initting your app will setup your local app to
+    # Initing your app will setup your local app to
     # be deployable on the PagodaGrid
     # 
-    # Before initting your app, your app must be registered.
+    # Before initing your app, your app must be registered.
     # You can register on the website, or via pagoda create 'yourapp'
     # assuming you are already have an account and in good standing
     # 
     def init
-      
+      if args.length > 0
+        name = args.first
+        if pagoda.list.include? name
+          if confirm("Is this #{name}'s root directory? (y/n)")
+            FileUtils.cd(Dir.pwd)
+            init_app if !is_git?
+            add_remote(name)
+            display "#{name} is ready for deployment! # pagoda deploy"
+          else
+            error "Please change into #{name}'s root directory and try again."
+          end
+        else
+          error "#{name} doesn't match any of the existing apps.\nYou must first create #{name} if it doesn't already exist. # pagoda create #{name}\nList all available apps # pagoda list"
+        end
+      else
+        error "Please specify an app name: pagoda init appname"
+      end
     end
     
     def info
@@ -56,5 +72,28 @@ module Pagoda::Command
         display "#{c[:username]} -> #{c[:email]}"
       end
     end
+    
+    def destroy
+      app = extract_app
+      if confirm "Are you sure you want to destroy #{app}? This cannot be undone! (y/n)"
+        pagoda.destroy(app)
+        display("#{app} permanently destroyed.")
+      end
+    end
+    
+    protected
+    
+    def is_git?
+      File.exists?(".git") && File.directory?(".git")
+    end
+    
+    def init_app
+      shell "git init"
+    end
+    
+    def add_remote(name)
+      shell "git remote add pagoda git@git.pagodagrid.com:#{name}.git"
+    end
+    
   end
 end

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tyler Flint"]
-  s.date = %q{2010-10-29}
+  s.date = %q{2010-11-01}
   s.default_executable = %q{pagoda}
   s.description = %q{client for interacting with the pagodagrid}
   s.email = %q{tyler@pagodagrid.com}
