@@ -60,7 +60,7 @@ module Pagoda::Command
     def ask_for_credentials
       puts "Enter your PagodaGrid credentials."
 
-      print "Email: "
+      print "User: "
       user = ask
 
       print "Password: "

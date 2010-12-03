@@ -1,5 +1,6 @@
 module Pagoda::Command
   class Keys < Base
+    
     def list
       long = args.any? { |a| a == '--long' }
       keys = pagoda.keys

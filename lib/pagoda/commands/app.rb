@@ -1,5 +1,6 @@
 module Pagoda::Command
   class App < Base
+    
     def list
       list = pagoda.list
       if list.size > 0
@@ -71,6 +72,37 @@ module Pagoda::Command
       attrs[:collaborators].each do |c|
         display "#{c[:username]} -> #{c[:email]}"
       end
+    end
+    
+    def card_info
+      app = extract_app
+      attrs = pagoda.app_credit_card_info(app)
+      display "=== card associated with #{app}"
+      display "last four: #{attrs[:number]}"
+    end
+    
+    def add_card
+      app = extract_app
+      display "give me yo number:"
+      number = ask
+      valid = false
+      until valid
+        display "expiration date YYYY-MM:"
+        expiration = ask
+        if expression =~ (d{4})-(1[0-2]|0[1-9])
+          valid = true
+        end
+        if valid == false
+          display "invalid expiration format"
+        end
+      end
+      display "CVV number:"
+      cvv = ask
+      card = {:number => number, :expiration => expiration, :code => cvv}
+      pagoda.app_add_card(app, card)
+      display "card added to #{app}"
+      display "card number: #{number}"
+      display "expiration : #{expiration}"
     end
     
     def destroy

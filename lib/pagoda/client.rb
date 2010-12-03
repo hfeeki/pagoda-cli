@@ -24,6 +24,11 @@ class Pagoda::Client
     @host     = host
   end
   
+  def list
+    doc = xml(get("/apps").to_s)
+    doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app.elements['name'].text }
+  end
+  
   def info(app)
     doc = xml(get("/apps/#{app}").to_s)
     doc.elements.to_a('//app/*').inject({}) do |hash, element|
@@ -41,25 +46,17 @@ class Pagoda::Client
     end
   end
   
-  def rollback(app)
-    get("/apps/#{app}/rollback").to_s
+  def app_credit_card_info(app)
+    doc = xml(get("/apps/#{app}/card").to_s)
+    doc.elements.to_a("//card/*").inject({}) { |hash, element| hash[:number] = element.elements['number'].text; hash}
   end
   
-  def add_collaborator(app, email)
-    post("/apps/#{app}/collaborators", { 'collaborator[email]' => email }).to_s
-  end
-  
-  def remove_collaborator(app, email)
-    delete("/apps/#{app}/collaborators/#{email}").to_s
-  end
-  
-  def list
-    doc = xml(get("/apps").to_s)
-    doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app.elements['name'].text }
+  def app_add_card(app, card)
+    get("/app/#{app}/card", card)
   end
   
   def create(app)
-    doc = xml(post("/apps", {'name' => 'testapp'}).to_s)
+    doc = xml(post("/apps", {'name' => app}).to_s)
     doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
@@ -67,21 +64,83 @@ class Pagoda::Client
     delete("/apps/#{app}").to_s
   end
   
+  def rollback(app)
+    get("/apps/#{app}/rollback").to_s
+  end
+  
+  def deploy(app)
+    get("app/#{app}/deploy").to_s
+  end
+  
+  def list_collaborators(app)
+    doc = xml(get("/apps/#{app}/collaborators").to_s)
+    doc.elements.to_a('//collaborators/*').inject({}) do |hash, element|
+      hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+        list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+        hash
+      end
+    end
+  end
+  
+  def add_collaborator(app, email)
+    post("/apps/#{app}/collaborators/#{email}").to_s
+  end
+  
+  def remove_collaborator(app, email)
+    delete("/apps/#{app}/collaborators/#{email}").to_s
+  end
+  
+  def app_transfer(app, email)
+    put("/app/#{app}/owner/#{email}").to_s
+  end
+  
   def keys
     doc = xml(get('/keys').to_s)
     doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
   end
   
+  def user_list
+    
+  end
+  
+  def user_create
+    post("/users", @user)
+  end
+
+  def user_info
+    post("/users/#{@user}")
+    
+  end
+
+  def user_update(attrib)
+    put("/users/#{@user}", attrib)
+        
+  end
+  
+  
+  
+  def user_reset_password(password)
+    put("/users/#{@user}/password/reset", {:password => password})
+    
+  end
+  
+  def user_forgot_password
+    put("/users/#{@user}/password/forgot")
+    
+  end
+  
+  
+  
   def add_key(key)
-    post('/keys', key, { 'Content-Type' => 'text/ssh-authkey' }).to_s
+    post("/users/#{@user}/keys", key, { 'Content-Type' => 'text/ssh-authkey' }).to_s
   end
   
   def remove_key(email)
-    delete("/keys/#{email}").to_s
+    delete("/users/#{@user}/keys/#{email}").to_s
   end
   
   def remove_all_keys
-    delete("/keys").to_s
+    delete("/users/#{@user}/keys").to_s
   end
   
   def on_warning(&blk)
