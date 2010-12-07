@@ -7,11 +7,11 @@ module Pagoda::Command
   help                         # show this usage
   version                      # show the gem version
 
-  list                         # list your apps
-  create <name>                # create (register) a new app
-  init   <name>                # link current directory to be deployed as a created app
-  info [<name>]                # display info about an app
-  destroy [<name>]             # remove app
+  app:list                     # list your apps
+  app:create <name>            # create (register) a new app
+  app:init   <name>            # link current directory to be deployed as a created app
+  app:info [<name>]            # display info about an app
+  app:destroy [<name>]         # remove app
 
   deploy                       # deploy current directory app to production
   deploy:production            # same as deploy
@@ -25,7 +25,7 @@ module Pagoda::Command
   keys:add [<path to keyfile>] # add a public key
   keys:remove <keyname>        # remove a key by name (user@host)
   keys:clear                   # remove all keys
-
+  
       }
     end
   end

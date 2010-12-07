@@ -1,4 +1,3 @@
-
 module Pagoda
   module Command
     class Base

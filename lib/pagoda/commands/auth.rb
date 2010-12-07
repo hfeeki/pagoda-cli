@@ -98,8 +98,8 @@ module Pagoda::Command
     def save_credentials
       begin
         write_credentials
-        command = args.any? { |a| a == '--ignore-keys' } ? 'auth:check' : 'keys:add'
-        Pagoda::Command.run_internal(command, args)
+        # command = args.any? { |a| a == '--ignore-keys' } ? 'auth:check' : 'keys:add'
+        # Pagoda::Command.run_internal(command, args)
       rescue RestClient::Unauthorized => e
         delete_credentials
         raise e unless retry_login?

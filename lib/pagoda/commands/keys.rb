@@ -18,7 +18,6 @@ module Pagoda::Command
     def add
       keyfile = args.first || find_key
       key = File.read(keyfile)
-
       display "Uploading ssh public key #{keyfile}"
       pagoda.add_key(key)
     end

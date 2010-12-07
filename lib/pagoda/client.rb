@@ -18,18 +18,18 @@ class Pagoda::Client
     end
   end
   
-  def initialize(user, password, host='pagodagrid.com')
+  def initialize(user, password, host='localhost')
     @user     = user
     @password = password
     @host     = host
   end
   
-  def list
+  def app_list
     doc = xml(get("/apps").to_s)
     doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app.elements['name'].text }
   end
   
-  def info(app)
+  def app_info(app)
     doc = xml(get("/apps/#{app}").to_s)
     doc.elements.to_a('//app/*').inject({}) do |hash, element|
       case element.name
@@ -55,12 +55,12 @@ class Pagoda::Client
     get("/app/#{app}/card", card)
   end
   
-  def create(app)
+  def app_create(app)
     doc = xml(post("/apps", {'name' => app}).to_s)
     doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
-  def destroy(app)
+  def app_destroy(app)
     delete("/apps/#{app}").to_s
   end
   
@@ -90,47 +90,16 @@ class Pagoda::Client
     delete("/apps/#{app}/collaborators/#{email}").to_s
   end
   
-  def app_transfer(app, email)
+  def transfer_owner(app, email)
     put("/app/#{app}/owner/#{email}").to_s
   end
   
+  #KEYS command file
   def keys
-    doc = xml(get('/keys').to_s)
+    doc = xml(get("/users/#{@user}/keys").to_s)
     doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
   end
-  
-  def user_list
-    
-  end
-  
-  def user_create
-    post("/users", @user)
-  end
 
-  def user_info
-    post("/users/#{@user}")
-    
-  end
-
-  def user_update(attrib)
-    put("/users/#{@user}", attrib)
-        
-  end
-  
-  
-  
-  def user_reset_password(password)
-    put("/users/#{@user}/password/reset", {:password => password})
-    
-  end
-  
-  def user_forgot_password
-    put("/users/#{@user}/password/forgot")
-    
-  end
-  
-  
-  
   def add_key(key)
     post("/users/#{@user}/keys", key, { 'Content-Type' => 'text/ssh-authkey' }).to_s
   end
@@ -143,6 +112,60 @@ class Pagoda::Client
     delete("/users/#{@user}/keys").to_s
   end
   
+  #USER command file
+  def user_list
+    get("/users").to_s
+    # doc = xml(get("/users").to_s)
+    # array = doc.elements.to_a('//users/*').inject() do |array, element|
+    #   array << element.elements['user']
+    #   array
+    # end
+  end
+  
+  def user_create(email)
+    post("/users", {:user => {:username => @user, :password => @password, :email => email}}).to_s
+  end
+
+  def user_info
+    doc = xml(get("/users/#{@user}").to_s)
+    doc.elements.to_a('//user/*').inject({}) do |hash, element|
+      hash[:user] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+      hash
+    end
+  end
+
+  def user_update(attrib)
+    put("/users/#{@user}", attrib).to_s
+  end
+  
+  def reset_password(password)
+    put("/users/#{@user}/password/reset", {:password => password}).to_s
+    @passwrod = password
+  end
+  
+  def forgot_password
+    put("/users/#{@user}/password/forgot").to_s
+    
+  end
+  
+  def user_delete_card(card)
+    delete("/user/#{@user}/cards/#{card}").to_s
+  end
+  
+  def user_list_cards #implified because the api is still not nailed down
+    get("/users/#{@user}/cards").to_s
+    # doc = xml(get("/users/#{@user}/cards").to_s)
+    # array = doc.elements.to_a('//cards/*').inject() do |array, element|
+    #   array << element
+    #   array
+    # end
+  end
+  
+  def user_add_card(card)
+    post("/users/#{@user}/cards", card).to_s
+    
+  end
+  
   def on_warning(&blk)
     @warning_callback = blk
   end
@@ -150,15 +173,17 @@ class Pagoda::Client
   protected
   
   def resource(uri)
+    puts @user
+    puts @password
     RestClient.proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
     if uri =~ /^https?/
-      RestClient::Resource.new(uri, user, password)
+      RestClient::Resource.new(uri, :username => @user, :password => @password)
     else
-      RestClient::Resource.new("https://api.pagodagrid.com", user, password)[uri]
+      RestClient::Resource.new("50.22.147.27", :username => @user, :password => @password)[uri]
     end
   end
 
-  def get(uri, extra_headers={})    
+  def get(uri, extra_headers={})
     process(:get, uri, extra_headers)
   end
 
@@ -166,7 +191,7 @@ class Pagoda::Client
     process(:post, uri, extra_headers, payload)
   end
 
-  def put(uri, payload, extra_headers={})    
+  def put(uri, payload="", extra_headers={})    
     process(:put, uri, extra_headers, payload)
   end
 

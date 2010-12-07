@@ -2,7 +2,7 @@ module Pagoda::Command
   class App < Base
     
     def list
-      list = pagoda.list
+      list = pagoda.app_list
       if list.size > 0
         display "=== Your Apps ==="
         display list.join("\n")
@@ -18,7 +18,7 @@ module Pagoda::Command
     #
     def create
       if args.length > 0
-        attrs = pagoda.create(args.first)
+        attrs = pagoda.app_create(args.first)
         display "=== #{attrs[:name]} ==="
         display "IP:    #{attrs[:ip]}"
         display "\n"
@@ -39,7 +39,7 @@ module Pagoda::Command
     def init
       if args.length > 0
         name = args.first
-        if pagoda.list.include? name
+        if pagoda.app_list.include? name
           if confirm("Is this #{name}'s root directory? (y/n)")
             FileUtils.cd(Dir.pwd)
             init_app if !is_git?
@@ -49,7 +49,9 @@ module Pagoda::Command
             error "Please change into #{name}'s root directory and try again."
           end
         else
-          error "#{name} doesn't match any of the existing apps.\nYou must first create #{name} if it doesn't already exist. # pagoda create #{name}\nList all available apps # pagoda list"
+          error "#{name} doesn't match any of the existing apps.\n
+                You must first create #{name} if it doesn't already exist. # pagoda create #{name}\n
+                List all available apps # pagoda list"
         end
       else
         error "Please specify an app name: pagoda init appname"
@@ -58,7 +60,7 @@ module Pagoda::Command
     
     def info
       name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
-      attrs = pagoda.info(name)
+      attrs = pagoda.app_info(name)
       display "=== #{attrs[:name]} ==="
       display "IP:           #{attrs[:ip]}"
       display "Instances:    #{attrs[:instances]}"
@@ -83,13 +85,13 @@ module Pagoda::Command
     
     def add_card
       app = extract_app
-      display "give me yo number:"
+      display "Enter credit card number:"
       number = ask
       valid = false
       until valid
-        display "expiration date YYYY-MM:"
+        display "Expiration date YYYY-MM:"
         expiration = ask
-        if expression =~ (d{4})-(1[0-2]|0[1-9])
+        if expiration  =~ /\d{4}\-\d{2}/
           valid = true
         end
         if valid == false
@@ -108,8 +110,8 @@ module Pagoda::Command
     def destroy
       app = extract_app
       if confirm "Are you sure you want to destroy #{app}? This cannot be undone! (y/n)"
-        pagoda.destroy(app)
-        display("#{app} permanently destroyed.")
+        pagoda.app_destroy(app)
+        display "#{app} permanently destroyed."
       end
     end
     
