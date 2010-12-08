@@ -2,13 +2,14 @@ module Pagoda::Command
   class App < Base
     
     def list
-      list = pagoda.app_list
-      if list.size > 0
-        display "=== Your Apps ==="
-        display list.join("\n")
-      else
-        display "You have no apps."
-      end
+      display pagoda.app_list
+      # list = pagoda.app_list
+      # if list.size > 0
+      #   display "=== Your Apps ==="
+      #   display list.join("\n")
+      # else
+      #   display "You have no apps."
+      # end
     end
     
     # 
@@ -18,11 +19,12 @@ module Pagoda::Command
     #
     def create
       if args.length > 0
-        attrs = pagoda.app_create(args.first)
-        display "=== #{attrs[:name]} ==="
-        display "IP:    #{attrs[:ip]}"
-        display "\n"
-        display "From #{attrs[:name]}'s root directory, run: pagoda init #{attrs[:name]}"
+        display pagoda.app_create(args.first)
+      #   attrs = pagoda.app_create(args.first)
+      #   display "=== #{attrs[:name]} ==="
+      #   display "IP:    #{attrs[:ip]}"
+      #   display "\n"
+      #   display "From #{attrs[:name]}'s root directory, run: pagoda init #{attrs[:name]}"
       else
         error "Please specify an app name: pagoda create appname" unless args.length > 0
       end
@@ -38,7 +40,7 @@ module Pagoda::Command
     # 
     def init
       if args.length > 0
-        name = args.first
+        name = NAME # args.first
         if pagoda.app_list.include? name
           if confirm("Is this #{name}'s root directory? (y/n)")
             FileUtils.cd(Dir.pwd)
@@ -59,32 +61,34 @@ module Pagoda::Command
     end
     
     def info
-      name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
-      attrs = pagoda.app_info(name)
-      display "=== #{attrs[:name]} ==="
-      display "IP:           #{attrs[:ip]}"
-      display "Instances:    #{attrs[:instances]}"
-      display "Created At:   #{attrs[:created_at]}"
-      display "\n"
-      display "== Owner =="
-      display "Username:     #{attrs[:owner][:username]}"
-      display "Email:        #{attrs[:owner][:email]}"
-      display "\n"
-      display "== Collaborators =="
-      attrs[:collaborators].each do |c|
-        display "#{c[:username]} -> #{c[:email]}"
-      end
+      name = NAME #(args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
+      display pagoda.app_info(name)
+      # attrs = pagoda.app_info(name)
+      # display "=== #{attrs[:name]} ==="
+      # display "IP:           #{attrs[:ip]}"
+      # display "Instances:    #{attrs[:instances]}"
+      # display "Created At:   #{attrs[:created_at]}"
+      # display "\n"
+      # display "== Owner =="
+      # display "Username:     #{attrs[:owner][:username]}"
+      # display "Email:        #{attrs[:owner][:email]}"
+      # display "\n"
+      # display "== Collaborators =="
+      # attrs[:collaborators].each do |c|
+      #   display "#{c[:username]} -> #{c[:email]}"
+      # end
     end
     
     def card_info
-      app = extract_app
-      attrs = pagoda.app_credit_card_info(app)
-      display "=== card associated with #{app}"
-      display "last four: #{attrs[:number]}"
+      app = NAME #extract_app
+      display pagoda.app_credit_card_info(app)
+      # attrs = pagoda.app_credit_card_info(app)
+      # display "=== card associated with #{app}"
+      # display "last four: #{attrs[:number]}"
     end
     
     def add_card
-      app = extract_app
+      app = NAME #extract_app
       display "Enter credit card number:"
       number = ask
       valid = false
@@ -108,7 +112,7 @@ module Pagoda::Command
     end
     
     def destroy
-      app = extract_app
+      app = NAME #extract_app
       if confirm "Are you sure you want to destroy #{app}? This cannot be undone! (y/n)"
         pagoda.app_destroy(app)
         display "#{app} permanently destroyed."

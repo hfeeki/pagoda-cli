@@ -25,39 +25,43 @@ class Pagoda::Client
   end
   
   def app_list
-    doc = xml(get("/apps").to_s)
-    doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app.elements['name'].text }
+    get("/apps").to_s
+    # doc = xml(get("/apps").to_s)
+    # doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app }
   end
   
   def app_info(app)
-    doc = xml(get("/apps/#{app}").to_s)
-    doc.elements.to_a('//app/*').inject({}) do |hash, element|
-      case element.name
-        when "owner"
-          hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
-        when "collaborators"
-          hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
-            list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
-          end
-        else
-          hash[element.name.gsub(/-/, '_').to_sym] = element.text
-      end
-      hash
-    end
+    get("/apps/#{app}").to_s
+    # doc = xml(get("/apps/#{app}").to_s)
+    # doc.elements.to_a('//app/*').inject({}) do |hash, element|
+    #   case element.name
+    #     when "owner"
+    #       hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+    #     when "collaborators"
+    #       hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+    #         list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+    #       end
+    #     else
+    #       hash[element.name.gsub(/-/, '_').to_sym] = element.text
+    #   end
+    #   hash
+    # end
   end
   
   def app_credit_card_info(app)
-    doc = xml(get("/apps/#{app}/card").to_s)
-    doc.elements.to_a("//card/*").inject({}) { |hash, element| hash[:number] = element.elements['number'].text; hash}
+    get("/apps/#{app}/card").to_s
+    # doc = xml(get("/apps/#{app}/card").to_s)
+    # doc.elements.to_a("//card/*").inject({}) { |hash, element| hash[:number] = element.elements['number'].text; hash}
   end
   
   def app_add_card(app, card)
-    get("/app/#{app}/card", card)
+    post("/apps/#{app}/card", {:card => card})
   end
   
   def app_create(app)
-    doc = xml(post("/apps", {'name' => app}).to_s)
-    doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
+    post("/apps", {:app => {:name => app}}).to_s
+    # doc = xml(post("/apps", {'name' => app}).to_s)
+    # doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def app_destroy(app)
@@ -73,13 +77,14 @@ class Pagoda::Client
   end
   
   def list_collaborators(app)
-    doc = xml(get("/apps/#{app}/collaborators").to_s)
-    doc.elements.to_a('//collaborators/*').inject({}) do |hash, element|
-      hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
-        list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
-        hash
-      end
-    end
+    get("/apps/#{app}/collaborators").to_s
+    # doc = xml(get("/apps/#{app}/collaborators").to_s)
+    # doc.elements.to_a('//collaborators/*').inject({}) do |hash, element|
+    #   hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+    #     list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+    #     hash
+    #   end
+    # end
   end
   
   def add_collaborator(app, email)
@@ -96,12 +101,13 @@ class Pagoda::Client
   
   #KEYS command file
   def keys
-    doc = xml(get("/users/#{@user}/keys").to_s)
-    doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
+    get("/users/#{@user}/keys").to_s
+    # doc = xml(get("/users/#{@user}/keys").to_s)
+    # doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
   end
 
   def add_key(key)
-    post("/users/#{@user}/keys", key, { 'Content-Type' => 'text/ssh-authkey' }).to_s
+    post("/users/#{@user}/keys", {:user => {:key => key}}, { 'Content-Type' => 'text/ssh-authkey' }).to_s
   end
   
   def remove_key(email)
@@ -127,11 +133,12 @@ class Pagoda::Client
   end
 
   def user_info
-    doc = xml(get("/users/#{@user}").to_s)
-    doc.elements.to_a('//user/*').inject({}) do |hash, element|
-      hash[:user] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
-      hash
-    end
+    get("/users/#{@user}").to_s
+    # doc = xml(get("/users/#{@user}").to_s)
+    # doc.elements.to_a('//user/*').inject({}) do |hash, element|
+    #   hash[:user] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+    #   hash
+    # end
   end
 
   def user_update(attrib)
@@ -139,17 +146,17 @@ class Pagoda::Client
   end
   
   def reset_password(password)
-    put("/users/#{@user}/password/reset", {:password => password}).to_s
+    put("/users/#{@user}/password/reset", {:user =>{:password => password}}).to_s
     @passwrod = password
   end
   
   def forgot_password
-    put("/users/#{@user}/password/forgot").to_s
+    get("/users/#{@user}/password/forgot").to_s
     
   end
   
   def user_delete_card(card)
-    delete("/user/#{@user}/cards/#{card}").to_s
+    delete("/users/#{@user}/cards/#{card}").to_s
   end
   
   def user_list_cards #implified because the api is still not nailed down
@@ -162,7 +169,7 @@ class Pagoda::Client
   end
   
   def user_add_card(card)
-    post("/users/#{@user}/cards", card).to_s
+    post("/users/#{@user}/cards", {:card => card}).to_s
     
   end
   
@@ -173,13 +180,11 @@ class Pagoda::Client
   protected
   
   def resource(uri)
-    puts @user
-    puts @password
     RestClient.proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
     if uri =~ /^https?/
-      RestClient::Resource.new(uri, :username => @user, :password => @password)
+      RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("50.22.147.27", :username => @user, :password => @password)[uri]
+      RestClient::Resource.new("localhost:3000#{uri}", @user, @password)
     end
   end
 
@@ -209,7 +214,7 @@ class Pagoda::Client
     {
       'User-Agent'           => self.class.gem_version_string,
       'X-Ruby-Version'       => RUBY_VERSION,
-      'X-Ruby-Platform'      => RUBY_PLATFORM
+      'X-Ruby-Platform'      => RUBY_PLATFORM,
     }
   end
 

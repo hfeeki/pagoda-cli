@@ -3,15 +3,16 @@ module Pagoda::Command
     
     def list
       long = args.any? { |a| a == '--long' }
-      keys = pagoda.keys
-      if keys.empty?
-        display "No keys for #{pagoda.user}"
-      else
-        display "=== #{keys.size} key#{'s' if keys.size > 1} for #{pagoda.user}"
-        keys.each do |key|
-          display long ? key.strip : format_key_for_display(key)
-        end
-      end
+      display pagoda.keys
+      # keys = pagoda.keys
+      # if keys.empty?
+      #   display "No keys for #{pagoda.user}"
+      # else
+      #   display "=== #{keys.size} key#{'s' if keys.size > 1} for #{pagoda.user}"
+      #   keys.each do |key|
+      #     display long ? key.strip : format_key_for_display(key)
+      #   end
+      # end
     end
     alias :index :list
 
