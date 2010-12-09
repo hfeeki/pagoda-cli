@@ -2,14 +2,14 @@ module Pagoda::Command
   class App < Base
     
     def list
-      display pagoda.app_list
-      # list = pagoda.app_list
-      # if list.size > 0
-      #   display "=== Your Apps ==="
-      #   display list.join("\n")
-      # else
-      #   display "You have no apps."
-      # end
+      apps = parse pagoda.app_list
+      list = apps['apps']
+        display "=== Your Apps ==="
+        list.each do |app|
+          display "name: #{app['name']}"
+          display " - ID: #{app['id']}"
+          display " - IP: #{app['ip_address']}"
+        end
     end
     
     # 
@@ -19,14 +19,11 @@ module Pagoda::Command
     #
     def create
       if args.length > 0
-        display pagoda.app_create(args.first)
-      #   attrs = pagoda.app_create(args.first)
-      #   display "=== #{attrs[:name]} ==="
-      #   display "IP:    #{attrs[:ip]}"
-      #   display "\n"
-      #   display "From #{attrs[:name]}'s root directory, run: pagoda init #{attrs[:name]}"
+        pagoda.app_create(args.first)
+        display "=== #{args.first} created ==="
+        display "From #{args.first}'s root directory, run: pagoda init #{args.first}"
       else
-        error "Please specify an app name: pagoda create appname" unless args.length > 0
+        error "Please specify an app name: pagoda create appname"
       end
     end
     
@@ -62,29 +59,42 @@ module Pagoda::Command
     
     def info
       name = NAME #(args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
-      display pagoda.app_info(name)
-      # attrs = pagoda.app_info(name)
-      # display "=== #{attrs[:name]} ==="
-      # display "IP:           #{attrs[:ip]}"
-      # display "Instances:    #{attrs[:instances]}"
-      # display "Created At:   #{attrs[:created_at]}"
-      # display "\n"
-      # display "== Owner =="
-      # display "Username:     #{attrs[:owner][:username]}"
-      # display "Email:        #{attrs[:owner][:email]}"
-      # display "\n"
-      # display "== Collaborators =="
-      # attrs[:collaborators].each do |c|
-      #   display "#{c[:username]} -> #{c[:email]}"
-      # end
+      app = parse pagoda.app_info(name)
+      puts app
+      attrs = app['app']
+      display "=== #{attrs['name']} ==="
+      display "ID:           #{attrs['id']}"
+      display "IP:           #{attrs['ip']}"
+      display "\n"
+      if attrs['owner']
+        display "== Owner =="
+        display "Username:     #{attrs['owner']['username']}"
+        display "Email:        #{attrs['owner']['email']}"
+        display "\n"
+      end
+      if attrs['credit_card']
+        display "== Card =="
+        display "ID:           #{attrs['credit_card']['id']}"
+        display "Last four:    #{attrs['credit_card']['last_four']}"
+        display "\n"
+      end
+      if attrs['collaborators']
+        display "== Collaborators =="
+        attrs['collaborators']['collaborator'].each do |c|
+          display "#{c}"
+        end
+        display "\n"
+      end
     end
     
     def card_info
       app = NAME #extract_app
-      display pagoda.app_credit_card_info(app)
-      # attrs = pagoda.app_credit_card_info(app)
-      # display "=== card associated with #{app}"
-      # display "last four: #{attrs[:number]}"
+      card = parse pagoda.app_credit_card_info(app)
+      attrs = card['credit_card']
+      display "=== card associated with #{app} ==="
+      display "ID:         #{attrs['id']}"
+      display "last four:  #{attrs['last_four']}"
+
     end
     
     def add_card

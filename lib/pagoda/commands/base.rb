@@ -1,3 +1,5 @@
+require 'crack'
+
 module Pagoda
   module Command
     class Base
@@ -60,6 +62,13 @@ module Pagoda
               apps.select { |a| a.downcase == current_dir_name }.first
           end
         end
+      end
+      
+      # parse all xml documents given back from the API
+      # return:
+      #   hash containing all values from the xml doc
+      def parse(xml)
+        Crack::XML.parse(xml)
       end
       
       def git_remotes(base_dir)

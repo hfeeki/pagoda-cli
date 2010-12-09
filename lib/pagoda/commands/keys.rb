@@ -3,16 +3,18 @@ module Pagoda::Command
     
     def list
       long = args.any? { |a| a == '--long' }
-      display pagoda.keys
-      # keys = pagoda.keys
-      # if keys.empty?
-      #   display "No keys for #{pagoda.user}"
-      # else
-      #   display "=== #{keys.size} key#{'s' if keys.size > 1} for #{pagoda.user}"
-      #   keys.each do |key|
-      #     display long ? key.strip : format_key_for_display(key)
-      #   end
-      # end
+      keys = parse pagoda.keys
+      if keys['keys']
+        display "=== Keys ==="
+        list = keys['keys']
+        list.each do |key|
+          display "ID: #{key['id']}"
+          display " - Title: #{key['title']}"
+          display " - Email: #{key['email']}"
+        end
+      else
+        display "No keys found."
+      end
     end
     alias :index :list
 
@@ -20,7 +22,7 @@ module Pagoda::Command
       keyfile = args.first || find_key
       key = File.read(keyfile)
       display "Uploading ssh public key #{keyfile}"
-      pagoda.add_key(key)
+      display pagoda.add_key(key)
     end
 
     def remove

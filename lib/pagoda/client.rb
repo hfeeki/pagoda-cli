@@ -60,8 +60,6 @@ class Pagoda::Client
   
   def app_create(app)
     post("/apps", {:app => {:name => app}}).to_s
-    # doc = xml(post("/apps", {'name' => app}).to_s)
-    # doc.elements.to_a('//app/*').inject({}) {|hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def app_destroy(app)
@@ -96,7 +94,7 @@ class Pagoda::Client
   end
   
   def transfer_owner(app, email)
-    put("/app/#{app}/owner/#{email}").to_s
+    put("/apps/#{app}/owner/#{email}").to_s
   end
   
   #KEYS command file
@@ -107,7 +105,7 @@ class Pagoda::Client
   end
 
   def add_key(key)
-    post("/users/#{@user}/keys", {:user => {:key => key}}, { 'Content-Type' => 'text/ssh-authkey' }).to_s
+    post("/users/#{@user}/keys", {:user => {:key => key}}).to_s
   end
   
   def remove_key(email)

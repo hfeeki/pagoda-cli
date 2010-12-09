@@ -26,6 +26,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  crack
   json_pure
   rest-client
   rspec
