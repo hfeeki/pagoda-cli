@@ -58,11 +58,8 @@ module Pagoda::Command
     end
 
     def ask_for_credentials
-      puts "Enter your PagodaGrid credentials."
-
       print "User: "
       user = ask
-
       print "Password: "
       password = running_on_windows? ? ask_for_password_on_windows : ask_for_password
 

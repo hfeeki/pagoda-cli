@@ -24,42 +24,85 @@ class Pagoda::Client
     @host     = host
   end
   
+  def app_add_directive(app, directive)
+    post("/apps/#{app}/directives", {:directive => directive}).to_s
+  end
+
+  def app_update_directive(app, id, directive)
+    put("/apps/#{app}/directives/#{id}", {:directive => directive}).to_s
+  end
+
+  def app_get_directives(app)
+    get("/apps/#{app}/directives").to_s
+  end
+  
+  def app_get_directive(app, id)
+    get("/apps/#{app}/directives/#{id}").to_s
+  end
+  
+  def app_remove_directive(app, id)
+    delete("/apps/#{app}/directives/#{id}").to_s
+  end
+  
+  def app_add_rewrite(app, rewrite)
+    post("/apps/#{app}/rewrites", {:rewrite => rewrite}).to_s
+  end
+  
+  def app_update_rewrite(app, id, rewrite)
+    put("/apps/#{app}/rewrites/#{id}", {:rewrite => rewrite}).to_s
+  end
+  
+  def app_get_rewrites(app)
+    get("/apps/#{app}/rewrites").to_s
+  end
+  
+  def app_get_rewrite(app, id)
+    get("/apps/#{app}/rewrites/#{id}").to_s
+  end
+  
+  def app_remove_rewrite(add, id)
+    delete("/apps/#{app}/rewrites/#{id}").to_s
+  end
+  
   def app_list
     get("/apps").to_s
-    # doc = xml(get("/apps").to_s)
-    # doc.elements['apps'].elements.to_a('//app/').inject([]) { |list, app| list << app }
   end
   
   def app_info(app)
     get("/apps/#{app}").to_s
-    # doc = xml(get("/apps/#{app}").to_s)
-    # doc.elements.to_a('//app/*').inject({}) do |hash, element|
-    #   case element.name
-    #     when "owner"
-    #       hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
-    #     when "collaborators"
-    #       hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
-    #         list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
-    #       end
-    #     else
-    #       hash[element.name.gsub(/-/, '_').to_sym] = element.text
-    #   end
-    #   hash
-    # end
+  end
+  
+  def app_generate_csr(app, csr)
+    post("/apps/#{app}/csr", {:csr => csr}).to_s
+  end
+
+  def app_get_csr(app)
+    get("/apps/#{app}/csr").to_s
+  end
+  
+  def app_add_crt(app, crt)
+    post("/apps/#{app}/crt", {:crt => crt}).to_s
+  end
+
+  def app_get_crt(app)
+    get("/apps/#{app}/crt").to_s
   end
   
   def app_credit_card_info(app)
     get("/apps/#{app}/card").to_s
-    # doc = xml(get("/apps/#{app}/card").to_s)
-    # doc.elements.to_a("//card/*").inject({}) { |hash, element| hash[:number] = element.elements['number'].text; hash}
   end
   
   def app_add_card(app, card)
-    post("/apps/#{app}/card", {:card => card})
+    post("/apps/#{app}/card", {:card => card}).to_s
   end
   
   def app_create(app)
     post("/apps", {:app => {:name => app}}).to_s
+  end
+  
+  def app_update(app, updated)
+    updated
+    put("/apps/#{app}", {:update => updated}).to_s
   end
   
   def app_destroy(app)
@@ -76,17 +119,10 @@ class Pagoda::Client
   
   def list_collaborators(app)
     get("/apps/#{app}/collaborators").to_s
-    # doc = xml(get("/apps/#{app}/collaborators").to_s)
-    # doc.elements.to_a('//collaborators/*').inject({}) do |hash, element|
-    #   hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
-    #     list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
-    #     hash
-    #   end
-    # end
   end
   
   def add_collaborator(app, email)
-    post("/apps/#{app}/collaborators/#{email}").to_s
+    post("/apps/#{app}/collaborators", {:email => email}).to_s
   end
   
   def remove_collaborator(app, email)
@@ -100,8 +136,6 @@ class Pagoda::Client
   #KEYS command file
   def keys
     get("/users/#{@user}/keys").to_s
-    # doc = xml(get("/users/#{@user}/keys").to_s)
-    # doc.elements.to_a('//keys/key').inject([]) {|list, key| list << key.text }
   end
 
   def add_key(key)
@@ -119,11 +153,6 @@ class Pagoda::Client
   #USER command file
   def user_list
     get("/users").to_s
-    # doc = xml(get("/users").to_s)
-    # array = doc.elements.to_a('//users/*').inject() do |array, element|
-    #   array << element.elements['user']
-    #   array
-    # end
   end
   
   def user_create(email)
@@ -132,11 +161,6 @@ class Pagoda::Client
 
   def user_info
     get("/users/#{@user}").to_s
-    # doc = xml(get("/users/#{@user}").to_s)
-    # doc.elements.to_a('//user/*').inject({}) do |hash, element|
-    #   hash[:user] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
-    #   hash
-    # end
   end
 
   def user_update(attrib)
@@ -157,13 +181,8 @@ class Pagoda::Client
     delete("/users/#{@user}/cards/#{card}").to_s
   end
   
-  def user_list_cards #implified because the api is still not nailed down
+  def user_list_cards 
     get("/users/#{@user}/cards").to_s
-    # doc = xml(get("/users/#{@user}/cards").to_s)
-    # array = doc.elements.to_a('//cards/*').inject() do |array, element|
-    #   array << element
-    #   array
-    # end
   end
   
   def user_add_card(card)

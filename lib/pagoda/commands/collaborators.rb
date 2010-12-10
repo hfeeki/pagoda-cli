@@ -19,7 +19,8 @@ module Pagoda::Command
       app = NAME #extract_app
       email = args.shift.downcase rescue ''
       raise(CommandFailed, "Specify an email address to share the app with.") if email == ''
-      display pagoda.add_collaborator(app, email)
+      pagoda.add_collaborator(app, email)
+      display "Collaborator added."
     end
 
     def remove
