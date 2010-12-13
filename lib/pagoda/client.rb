@@ -29,7 +29,7 @@ class Pagoda::Client
   end
 
   def app_update_directive(app, id, directive)
-    put("/apps/#{app}/directives/#{id}", {:directive => directive}).to_s
+    put("/apps/#{app}/directives/#{id}", {:update => directive}).to_s
   end
 
   def app_get_directives(app)
@@ -49,7 +49,7 @@ class Pagoda::Client
   end
   
   def app_update_rewrite(app, id, rewrite)
-    put("/apps/#{app}/rewrites/#{id}", {:rewrite => rewrite}).to_s
+    put("/apps/#{app}/rewrites/#{id}", {:update => rewrite}).to_s
   end
   
   def app_get_rewrites(app)
@@ -60,7 +60,7 @@ class Pagoda::Client
     get("/apps/#{app}/rewrites/#{id}").to_s
   end
   
-  def app_remove_rewrite(add, id)
+  def app_remove_rewrite(app, id)
     delete("/apps/#{app}/rewrites/#{id}").to_s
   end
   

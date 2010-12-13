@@ -104,6 +104,7 @@ module Pagoda::Command
     def info
       name = NAME #(args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
       app = parse pagoda.app_info(name)
+      puts app
       attrs = app['app']
       display "=== #{attrs['name']} ==="
       display "ID:             #{attrs['id']}"
@@ -146,11 +147,11 @@ module Pagoda::Command
     
     def add_card
       app = NAME #extract_app
-      display "Enter credit card number:"
+      print "Enter credit card number: "
       number = ask
       valid = false
       until valid
-        display "Expiration date YYYY-MM:"
+        print "Expiration date YYYY-MM: "
         expiration = ask
         if expiration  =~ /\d{4}\-\d{2}/
           valid = true
@@ -159,7 +160,7 @@ module Pagoda::Command
           display "invalid expiration format"
         end
       end
-      display "CVV number:"
+      print "CVV number: "
       cvv = ask
       card = {:number => number, :expiration => expiration, :code => cvv}
       pagoda.app_add_card(app, card)
