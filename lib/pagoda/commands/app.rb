@@ -3,13 +3,13 @@ module Pagoda::Command
     
     def list
       apps = parse pagoda.app_list
-      puts apps
+      # puts apps
       list = apps['apps']
         display "=== Your Apps ==="
         list.each do |app|
           display "name: #{app['name']}"
-          display " - ID: #{app['id']}"
-          display " - IP: #{app['ip_address']}"
+          # display " - ID: #{app['id']}"
+          # display " - IP: #{app['ip_address']}"
         end
     end
     
