@@ -5,9 +5,9 @@ module Pagoda::Command
       users = parse pagoda.user_list
       if users['users']
         display "=== users ==="
-        list = users['users']['user']
+        list = users['users']
         list.each do |user|
-          display "Username: #{user}"
+          display "Username: #{user['username']}"
         end
       else
         display "no users found"
@@ -16,7 +16,7 @@ module Pagoda::Command
     
     def create
       puts "Enter your PagodaGrid credentials."
-      print "email:"
+      print "email: "
       email = ask
       pagoda.user_create(email)
       display "user created successful"

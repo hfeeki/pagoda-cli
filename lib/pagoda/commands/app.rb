@@ -3,6 +3,7 @@ module Pagoda::Command
     
     def list
       apps = parse pagoda.app_list
+      puts apps
       list = apps['apps']
         display "=== Your Apps ==="
         list.each do |app|
@@ -16,15 +17,19 @@ module Pagoda::Command
     # create will register a new application with pagoda
     # It won't actually sync your app with the newly registered
     # Pagoda instance, you will then need to init your app
-    #
+    #{:app => {:name => app}}
     def create
-      if args.length > 0
-        pagoda.app_create(args.first)
-        display "=== #{args.first} created ==="
-        display "From #{args.first}'s root directory, run: pagoda init #{args.first}"
-      else
-        error "Please specify an app name: pagoda create appname"
-      end
+        display "=== Create App ==="
+        print "app name: "
+        hash = {}
+        hash[:app] = {}
+        hash[:app][:name] = ask
+        print "git url: "
+        hash[:app][:git_url] = ask
+        puts hash
+        puts pagoda.app_create(hash)
+        display "== App Created =="
+        display "address: #{hash[:app][:name]}.pagodagrid.com"
     end
     
     # 
@@ -89,10 +94,14 @@ module Pagoda::Command
     
     def set_crt
       app = NAME #extract_app
-      display "=== Set Crt ==="
-      print "what is your Crt: "
-      crt = ask
-      pagoda.app_add_crt(app, crt)
+      if args.length > 0
+        filename = args.first
+        file = File.open("#{filename}", "rb")
+        content = file.read
+        pagoda.app_add_crt(app, content)
+      else
+        display "Missing filename. pagoda app:set_crt filename.txt"
+      end
     end
     
     def get_crt
@@ -102,7 +111,7 @@ module Pagoda::Command
     end
     
     def info
-      name = NAME #(args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
+      name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
       app = parse pagoda.app_info(name)
       puts app
       attrs = app['app']

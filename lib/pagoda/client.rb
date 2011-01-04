@@ -18,7 +18,7 @@ class Pagoda::Client
     end
   end
   
-  def initialize(user, password, host='localhost')
+  def initialize(user, password, host='www.pagodagrid.com')
     @user     = user
     @password = password
     @host     = host
@@ -65,11 +65,11 @@ class Pagoda::Client
   end
   
   def app_list
-    get("/apps").to_s
+    get("/apps.xml").to_s
   end
   
   def app_info(app)
-    get("/apps/#{app}").to_s
+    get("/apps/#{app}.xml").to_s
   end
   
   def app_generate_csr(app, csr)
@@ -96,8 +96,8 @@ class Pagoda::Client
     post("/apps/#{app}/card", {:card => card}).to_s
   end
   
-  def app_create(app)
-    post("/apps", {:app => {:name => app}}).to_s
+  def app_create(hash)
+    post("/apps.xml", hash).to_s
   end
   
   def app_update(app, updated)
@@ -152,11 +152,11 @@ class Pagoda::Client
   
   #USER command file
   def user_list
-    get("/users").to_s
+    get("/users.xml").to_s
   end
   
   def user_create(email)
-    post("/users", {:user => {:username => @user, :password => @password, :email => email}}).to_s
+    post("/users.xml", {:user => {:username => @user, :password => @password, :email => email}}).to_s
   end
 
   def user_info
@@ -201,7 +201,7 @@ class Pagoda::Client
     if uri =~ /^https?/
       RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("localhost:3000#{uri}", @user, @password)
+      RestClient::Resource.new("www.pagodagrid.com#{uri}", @user, @password)
     end
   end
 
