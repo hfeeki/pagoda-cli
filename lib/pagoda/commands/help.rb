@@ -13,10 +13,9 @@ module Pagoda::Command
 
   == User functions ==
   user:create                  # create a new user
-  user:list                    # list all users
   user:info                    # show current user details
   user:reset                   # reset the password on the account to 'password'
-  user:forgot                  # send an email with a randomly generated password
+  user:forgot                  # send an email with instructions to reset the password
   user:add_card                # add a credit card to your account
   user:list_card               # list all cards linked to your account
   user:delete_card <card.id>   # delete a credit card with an id number of card.id
@@ -33,19 +32,13 @@ module Pagoda::Command
   
   == Deploy functions ==
   deploy                       # deploy current directory app to production
-  deploy:production            # same as deploy
-  deploy:staging               # deploy current directory app to staging url
+  rollback                     # rollback app
 
   == Collaborators functions ==
   collaborators                # list collaborators
   collaborators:add <email>    # add a collaborator
   collaborators:remove <email> # remove a collaborator
 
-  == Keys functions ==
-  keys                         # show registered public keys
-  keys:add [<path to keyfile>] # add a public key
-  keys:remove <keyname>        # remove a key by name (user@host)
-  keys:clear                   # remove all keys
   
       }
     end
