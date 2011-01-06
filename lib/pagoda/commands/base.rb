@@ -5,7 +5,6 @@ module Pagoda
     class Base
       include Pagoda::Helpers
 
-      NAME = 'test'
       attr_accessor :args
       attr_reader :autodetected_app
       def initialize(args, pagoda=nil)

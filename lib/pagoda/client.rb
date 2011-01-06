@@ -101,7 +101,6 @@ class Pagoda::Client
   end
   
   def app_update(app, updated)
-    updated
     put("/apps/#{app}.xml", {:update => updated}).to_s
   end
   
@@ -135,7 +134,7 @@ class Pagoda::Client
   
   #KEYS command file
   def keys
-    get("/users/#{@user}/keys").to_s
+    get("/users/#{@user}/keys.xml").to_s
   end
 
   def add_key(key)
@@ -174,7 +173,6 @@ class Pagoda::Client
   
   def forgot_password
     get("/users/#{@user}/password/forgot.xml").to_s
-    
   end
   
   def user_delete_card(card)
