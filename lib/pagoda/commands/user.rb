@@ -2,10 +2,6 @@ module Pagoda::Command
   class User < Base
     
     def list
-      item = pagoda.user_list
-      puts item
-      puts "@@@@@"
-      puts parse item
       users = parse pagoda.user_list
       if users['users']
         display "=== users ==="

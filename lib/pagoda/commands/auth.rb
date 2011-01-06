@@ -31,6 +31,11 @@ module Pagoda::Command
       get_credentials
       @credentials[1]
     end
+    
+    def app
+      get_credentials
+      @credentials[2]
+    end
 
     def credentials_file
       "#{home_directory}/.pagoda/credentials"

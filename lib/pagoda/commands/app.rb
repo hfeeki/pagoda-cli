@@ -26,8 +26,7 @@ module Pagoda::Command
         hash[:app][:name] = ask
         print "git url: "
         hash[:app][:git_url] = ask
-        puts hash
-        puts pagoda.app_create(hash)
+        pagoda.app_create(hash)
         display "== App Created =="
         display "address: #{hash[:app][:name]}.pagodagrid.com"
     end
@@ -42,7 +41,7 @@ module Pagoda::Command
     # 
     def init
       if args.length > 0
-        name = NAME # args.first
+        name = get_app_name
         if pagoda.app_list.include? name
           if confirm("Is this #{name}'s root directory? (y/n)")
             FileUtils.cd(Dir.pwd)
