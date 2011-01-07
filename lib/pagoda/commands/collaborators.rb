@@ -4,7 +4,7 @@ module Pagoda::Command
     def list
       app = NAME #extract_app
       
-      display "=== #{app} Collaborators ==="]
+      display "=== #{app} Collaborators ==="
       collaborators = parse pagoda.list_collaborators(app)
       collaborators['users'].each do |collaborator|
         # display "Username: #{collaborator['username']}"

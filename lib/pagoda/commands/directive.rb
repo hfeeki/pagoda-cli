@@ -25,10 +25,10 @@ module Pagoda::Command
       
       display "=== Add Directive ==="
       directive = {}
-      directive{:directory} = ask "Directory: "
-      directive{:who} = ask "Who (IP): "
-      directive{:action} =  ask "action (allow/deny): "
-      directive{:position} =  ask"Priority: "
+      directive[:directory] = ask "Directory: "
+      directive[:who] = ask "Who (IP): "
+      directive[:action]=  ask "action (allow/deny): "
+      directive[:position] =  ask"Priority: "
       
       pagoda.app_add_directive(app, directive)
       display "Directive added to #{app}"

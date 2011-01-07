@@ -18,10 +18,9 @@ module Pagoda::Command
       end
     end
     
-    def create
-        app = {}
-        
+    def create      
         display "=== Create App ==="
+        app = {}
         app[:name] = ask "Application Name: "
         app[:git_url] = ask "Application git clone URL: "
         
@@ -36,7 +35,7 @@ module Pagoda::Command
       name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
       
       app = parse pagoda.app_info(name)
-      display "=== #{app['app']['name']} ==="
+      display "=== Application Information: #{app['app']['name']} ==="
       display "ID:             #{app['app']['id']}"
       display "IP:             #{app['app']['ip']}"
       display "git url:        #{app['app']['git_url']}"
@@ -60,7 +59,8 @@ module Pagoda::Command
       if app['app']['collaborators']
         display "== Collaborators =="
         app['app']['collaborators']['collaborator'].each do |collaborator|
-          display "#{collaborator}"
+          display "#{collaborator['username']}"
+          display "#{collaborator['email']}"
         end
         display "\n"
       end
@@ -147,32 +147,26 @@ module Pagoda::Command
     
     def generate_csr
       app = NAME #extract_app
-      hash = {}
+      
       display "=== Create SSL CSR ==="
-      display "Please insert necessary fields"
-      display ""
-      print "country: "
-      hash[:country] = ask
-      print "state: "
-      hash[:state] = ask
-      print "city: "
-      hash[:city] = ask
-      print "organization: "
-      hash[:organization] = ask
-      print "department: "
-      hash[:department] = ask
-      print "common name: "
-      hash[:common_name] = ask
-      print "email: "
-      hash[:email] = ask
-      rtn = parse pagoda.app_generate_csr(app, hash)
-      display "#{rtn['app']['ssl_csr']}"
+      csr = {}
+      csr[:country]       = ask "country: "
+      csr[:state]         = ask "state: "
+      csr[:city]          = ask "city: "
+      csr[:organization]  = ask "organization: "
+      csr[:department]    = ask "department: "
+      csr[:common_name]   = ask "common name: "
+      csr[:email]         = ask "email: "
+      
+      # rtn = parse pagoda.app_generate_csr(app, hash)
+      # display "#{rtn['app']['ssl_csr']}"
     end
     
     def get_csr
       app = NAME #extract_app
-      rtn = parse pagoda.app_get_csr(app)
-      display "#{rtn['csr']}"
+      
+      csr = parse pagoda.app_get_csr(app)
+      display "#{csr['csr']}"
     end
     
     def set_crt
