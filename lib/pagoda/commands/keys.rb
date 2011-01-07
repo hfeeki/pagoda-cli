@@ -6,11 +6,10 @@ module Pagoda::Command
       keys = parse pagoda.keys
       if keys['keys']
         display "=== Keys ==="
-        list = keys['keys']
-        list.each do |key|
+        keys['keys'].each do |key|
           display "ID: #{key['id']}"
-          display " - Title: #{key['title']}"
-          display " - Email: #{key['email']}"
+          display "Title: #{key['title']}"
+          display "Email: #{key['email']}"
         end
       else
         display "No keys found."

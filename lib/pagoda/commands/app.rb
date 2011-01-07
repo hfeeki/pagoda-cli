@@ -1,6 +1,7 @@
 module Pagoda::Command
   class App < Base
     
+    # internal use only
     def list
       info = parse pagoda.user_info
       display "=== #{info['user']['username']} Applications ==="

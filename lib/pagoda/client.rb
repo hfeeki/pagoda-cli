@@ -177,7 +177,7 @@ class Pagoda::Client
   #-- USER COMMANDS --#
   #-------------------#
   
-  # internal only
+  #** INTERNAL USE ONLY **/
   def user_list
     get("/users.xml").to_s
   end

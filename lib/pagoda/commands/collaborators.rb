@@ -3,20 +3,20 @@ module Pagoda::Command
     
     def list
       app = NAME #extract_app
-      users = parse pagoda.list_collaborators(app)
-      display "=== Collaborators ==="
-      attrs = []
-      attrs = users['users']
-      attrs.each do |user|
-        display "Username: #{user['username']}"
-        display " -    ID: #{user['id']}"
-        display " - Email: #{user['email']}"
+      
+      display "=== #{app} Collaborators ==="]
+      collaborators = parse pagoda.list_collaborators(app)
+      collaborators['users'].each do |collaborator|
+        # display "Username: #{collaborator['username']}"
+        display "Email: #{collaborator['email']}"
       end
     end
+    
     alias :index :list
 
     def add
       app = NAME #extract_app
+      
       email = args.shift.downcase rescue ''
       raise(CommandFailed, "Specify an email address to share the app with.") if email == ''
       pagoda.add_collaborator(app, email)
@@ -25,6 +25,7 @@ module Pagoda::Command
 
     def remove
       app = NAME #extract_app
+      
       email = args.shift.downcase rescue ''
       raise(CommandFailed, "Specify an email address to remove from the app.") if email == ''
       pagoda.remove_collaborator(app, email)
