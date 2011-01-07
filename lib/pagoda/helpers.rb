@@ -1,3 +1,5 @@
+require 'crack'
+
 module Pagoda
   module Helpers
     def home_directory
@@ -21,9 +23,31 @@ module Pagoda
       end
     end
 
+    def format_date(date)
+      date = Time.parse(date) if date.is_a?(String)
+      date.strftime("%Y-%m-%d %H:%M %Z")
+    end
+
+    def ask(message=nil)
+      display message, false if message
+      gets.strip
+    end
+    
+    def confirm(message="Are you sure you wish to continue? (y/n)?")
+      display("#{message} ", false)
+      ask.downcase == 'y'
+    end
+
     def error(msg)
       STDERR.puts(msg)
       exit 1
+    end
+    
+    # parse all xml documents given back from the API
+    # return:
+    #   hash containing all values from the xml doc
+    def parse(xml)
+      Crack::XML.parse(xml)
     end
   end
 end

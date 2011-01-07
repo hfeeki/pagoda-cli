@@ -8,7 +8,7 @@ module Pagoda::Command
 
     def init_client
       client = Pagoda::Client.new(user, password)
-      client.on_warning { |msg| self.display("\n#{msg}\n\n") }
+      client.on_warning { |message| self.display("\n#{message}\n\n") }
       client
     end
 
@@ -63,18 +63,16 @@ module Pagoda::Command
     end
 
     def ask_for_credentials
-      print "User: "
-      user = ask
-      print "Password: "
-      password = running_on_windows? ? ask_for_password_on_windows : ask_for_password
-
-      [ user, password ]
+      user        = ask "Username: "
+      password    = running_on_windows? ? ask_for_password_on_windows : (ask "Password: ")
+      [user, password] # return
     end
 
     def ask_for_password_on_windows
       require "Win32API"
-      char = nil
-      password = ''
+      
+      char      = nil
+      password  = ask "Password: "
 
       while char = Win32API.new("crtdll", "_getch", [ ], "L").Call do
         break if char == 10 || char == 13 # received carriage return or newline
@@ -85,15 +83,7 @@ module Pagoda::Command
           (password << char.chr) rescue RangeError
         end
       end
-      puts
-      return password
-    end
-
-    def ask_for_password
-      echo_off
-      password = ask
-      puts
-      echo_on
+      
       return password
     end
 
@@ -124,8 +114,8 @@ module Pagoda::Command
 
     def write_credentials
       FileUtils.mkdir_p(File.dirname(credentials_file))
-      File.open(credentials_file, 'w') do |f|
-        f.puts self.credentials
+      File.open(credentials_file, 'w') do |file|
+        file.puts self.credentials
       end
       set_credentials_permissions
     end

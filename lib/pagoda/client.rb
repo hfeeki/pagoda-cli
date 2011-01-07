@@ -19,10 +19,14 @@ class Pagoda::Client
   end
   
   def initialize(user, password, host='www.pagodagrid.com')
-    @user     = user
-    @password = password
-    @host     = host
+    @user       = user
+    @password   = password
+    @host       = host
   end
+  
+  #--------------------------#
+  #-- APPLICATION COMMANDS --#
+  #--------------------------#
   
   def app_add_directive(app, directive)
     post("/apps/#{app}/directives.xml", {:directive => directive}).to_s
@@ -108,6 +112,10 @@ class Pagoda::Client
     delete("/apps/#{app}.xml").to_s
   end
   
+  #-------------------------#
+  #-- DEPLOYMENT/ROLLBACK --#
+  #-------------------------#
+  
   def rollback(app)
     get("/apps/#{app}/rollback.xml").to_s
   end
@@ -115,6 +123,10 @@ class Pagoda::Client
   def deploy(app)
     get("app/#{app}/deploy.xml").to_s
   end
+  
+  #---------------------------#
+  #-- COLLABORATOR COMMANDS --#
+  #---------------------------#
   
   def list_collaborators(app)
     get("/apps/#{app}/collaborators.xml").to_s
@@ -128,11 +140,18 @@ class Pagoda::Client
     delete("/apps/#{app}/collaborators/#{email}.xml").to_s
   end
   
+  #------------------------#
+  #-- TRANSFER OWNERSHIP --#
+  #------------------------#
+  
   def transfer_owner(app, email)
     put("/apps/#{app}/owner/#{email}.xml").to_s
   end
   
-  #KEYS command file
+  #-------------------#
+  #-- KEYS COMMANDS --#
+  #-------------------#
+  
   def keys
     get("/users/#{@user}/keys.xml").to_s
   end
@@ -149,7 +168,11 @@ class Pagoda::Client
     delete("/users/#{@user}/keys").to_s
   end
   
-  #USER command file
+  #-------------------#
+  #-- USER COMMANDS --#
+  #-------------------#
+  
+  # internal only
   def user_list
     get("/users.xml").to_s
   end
@@ -162,8 +185,11 @@ class Pagoda::Client
     get("/users/#{@user}.xml").to_s
   end
 
-  def user_update(attrib)
-    put("/users/#{@user}.xml", attrib).to_s
+  def user_update(updates)
+    put("/users/#{@user}.xml", {:user => updates}).to_s
+    @user       = updates[:username] if updates[:username]
+    @password   = updates[:password] if updates[:password]
+    @email      = updates[:email] if updates[:email]
   end
   
   def reset_password(password)
@@ -185,7 +211,6 @@ class Pagoda::Client
   
   def user_add_card(card)
     post("/users/#{@user}/cards.xml", {:card => card}).to_s
-    
   end
   
   def on_warning(&blk)

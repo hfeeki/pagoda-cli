@@ -7,10 +7,6 @@ module Pagoda::Command
         display "Your credentials have been reset"
       end
     end
-   
-   def change_user
-    get_credentials
-   end
     
   end
 end

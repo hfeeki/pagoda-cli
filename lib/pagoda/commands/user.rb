@@ -1,49 +1,75 @@
 module Pagoda::Command
   class User < Base
     
+    #internal only
     def list
       users = parse pagoda.user_list
       if users['users']
-        display "=== users ==="
-        list = users['users']
-        list.each do |user|
-          display "Username: #{user['username']}"
+        display "=== Users ==="
+        users['users'].each do |user|
+          display "#{user['username']}"
         end
       else
-        display "no users found"
+        display "Oh Noes, Pagoda found no users in the system!"
       end
     end
     
     def create
-      puts "Enter your PagodaGrid credentials."
-      print "email: "
-      email = ask
-      pagoda.user_create(email)
-      display "user created successful"
+      display "Enter a username, password, and email to create a new user."
+      Pagoda::Command.run_internal 'auth:reauthorize', nil
+      pagoda.user_create(ask "email: ")
+      
+      user = parse pagoda.user_info
+      display "User #{user['user']['username']} successfully created"
+    end
+    
+    def whoami?
+      info = parse pagoda.user_info
+      if info['user']
+        display "=== Current User ==="
+        display "You are: #{info['user']['username']}"
+        display "For more information use 'pagoda user:info'"
+      else
+        display "Oops, for some reason you aren't set as a user."
+        display "Use 'pagoda user:switch' to designate your user"
+        display "or use 'pagoda user:create' to create yourself a user."
+      end
+    end
+    
+    def switch
+      Pagoda::Command.run_internal 'auth:delete_credentials', nil
+      Pagoda::Command.run_internal 'auth:get_credentials', nil
+      display "You have switched users"
     end
     
     def info
-      rtn = parse pagoda.user_info
-      if rtn['user']
-        user = rtn['user']
-        display "=== user info ==="
-        display "Username: #{user['username']}"
-        display "Email:    #{user['email']}"
-        display "ID:       #{user['id']}"
+      info = parse pagoda.user_info
+      if info['user']
+        display "=== User Information ==="
+        display "Username:  #{info['user']['username']}"
+        display "Password:  #{info['user']['password']}"
+        display "Email:     #{info['user']['email']}"
       else
-        display "you are not a registered user."
-        display "run: pagoda user:create"
+        display "Oops, looks like you aren't a user just yet!"
+        display "Using 'pagoda user:create' will help."
       end
     end
     
     def update
-      display "=== Not Yet Implemented ==="
+      updates = {}
+      
+      display "=== Update User Information ==="
+      updates[:username]   = ask "New username: " if confirm "Update username (y/n)?"
+      updates[:password]   = ask "New password: " if confirm "Update password (y/n)?"
+      updates[:email]      = ask "New email: " if confirm "Update email (y/n)?"
+        
+      pagoda.user_update(updates)
     end
     
     def reset
       pagoda.reset_password("password")
-      display "=== user reset ==="
-      display "password reset to: 'password'"
+      display "=== User Password Reset ==="
+      display "Your password has been reset to: 'password'."
     end
     
     def forgot

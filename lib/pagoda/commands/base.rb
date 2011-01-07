@@ -1,5 +1,3 @@
-require 'crack'
-
 module Pagoda
   module Command
     class Base
@@ -11,20 +9,6 @@ module Pagoda
         @args = args
         @pagoda = pagoda
         @autodetected_app = false
-      end
-
-      def confirm(message="Are you sure you wish to continue? (y/n)?")
-        display("#{message} ", false)
-        ask.downcase == 'y'
-      end
-
-      def format_date(date)
-        date = Time.parse(date) if date.is_a?(String)
-        date.strftime("%Y-%m-%d %H:%M %Z")
-      end
-
-      def ask
-        gets.strip
       end
 
       def shell(cmd)
@@ -61,13 +45,6 @@ module Pagoda
               apps.select { |a| a.downcase == current_dir_name }.first
           end
         end
-      end
-      
-      # parse all xml documents given back from the API
-      # return:
-      #   hash containing all values from the xml doc
-      def parse(xml)
-        Crack::XML.parse(xml)
       end
       
       def git_remotes(base_dir)
