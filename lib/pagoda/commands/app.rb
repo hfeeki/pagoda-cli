@@ -2,33 +2,116 @@ module Pagoda::Command
   class App < Base
     
     def list
-      apps = parse pagoda.app_list
-      # puts apps
-      list = apps['apps']
-        display "=== Your Apps ==="
-        list.each do |app|
+      info = parse pagoda.user_info
+      display "=== #{info['user']['username']} Applications ==="
+      
+      if apps = parse(pagoda.app_list)
+        apps['apps'].each do |app|
           display "name: #{app['name']}"
           # display " - ID: #{app['id']}"
           # display " - IP: #{app['ip_address']}"
         end
+      else
+        display "#{info['user']['username']} has not created any applications yet."
+        display "Use 'pagoda app:create' to create one."
+      end
     end
     
-    # 
-    # create will register a new application with pagoda
-    # It won't actually sync your app with the newly registered
-    # Pagoda instance, you will then need to init your app
-    #{:app => {:name => app}}
     def create
+        app = {}
+        
         display "=== Create App ==="
-        print "app name: "
-        hash = {}
-        hash[:app] = {}
-        hash[:app][:name] = ask
-        print "git url: "
-        hash[:app][:git_url] = ask
-        pagoda.app_create(hash)
-        display "== App Created =="
-        display "address: #{hash[:app][:name]}.pagodagrid.com"
+        app[:name] = ask "Application Name: "
+        app[:git_url] = ask "Application git clone URL: "
+        
+        pagoda.app_create(app)
+        
+        display "Application #{app[:name]} successfully create at http://#{app[:name]}.pagodabox.com!"
+        display "Use 'pagoda app.list' to view a list of all your applications"
+        display "or use 'pagoda app.info --[name]' to view an applications information."
+    end
+    
+    def info
+      name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
+      
+      app = parse pagoda.app_info(name)
+      display "=== #{app['app']['name']} ==="
+      display "ID:             #{app['app']['id']}"
+      display "IP:             #{app['app']['ip']}"
+      display "git url:        #{app['app']['git_url']}"
+      display "php version:    #{app['app']['php_version']}"
+      display "enable gzip:    #{app['app']['enable_gzip']}"
+      display "far future:     #{app['app']['far_future_expires_enabled']}"
+      display "etag enabled:   #{app['app']['etag_enabled']}"
+      display "\n"
+      if app['app']['owner']
+        display "== Owner =="
+        display "Username:     #{app['app']['owner']['username']}"
+        display "Email:        #{app['app']['owner']['email']}"
+        display "\n"
+      end
+      if app['app']['credit_card']
+        display "== Card =="
+        display "ID:           #{app['app']['credit_card']['id']}"
+        display "Last four:    #{app['app']['credit_card']['last_four']}"
+        display "\n"
+      end
+      if app['app']['collaborators']
+        display "== Collaborators =="
+        app['app']['collaborators']['collaborator'].each do |collaborator|
+          display "#{collaborator}"
+        end
+        display "\n"
+      end
+    end
+    
+    def update
+      app = NAME #extract_app
+      
+      updates = {}
+      case update_display
+        when '1'
+          updates[:name] = ask "Desired Name: "
+        when '2'
+          updates[:git_url] = ask "Git Clone URL: "
+        when '3'
+          updates[:php_version] = ask "PHP Version: "
+        when '4'
+          gzip = ask "GZip Compression Enabled (y/n): "
+          updates[:enable_gzip] = true if gzip == 'y'
+          updates[:enable_gzip] = false if gzip == 'n'
+          display "Incorrect format. Update failed." if gzip != 'y' || gzip != 'n'
+        when '5'
+          ffe = ask "Far Future Expires Enabled (y/n): "
+          updates[:far_future_expires_enabled] = true if ffe == 'y'
+          updates[:far_future_expires_enabled] = false if ffe == 'n'
+          display "Incorrect format. Update failed." if ffe != 'y' || ffe != 'n'
+        when '6'
+          etag = ask "ETags Enabled (y/n): "
+          updates[:etag_enabled] = true if etag == 'y'
+          updates[:etag_enabled] = false if etag == 'n'
+          display "Incorrect format. Update failed." if etag != 'y' || etag != 'n'
+        when '7'
+          updates[:ssl_crt] = ask "ssl_crt: "
+      end
+      
+      if confirm("Are you done making changes? (y/n)")
+        if confirm "Are you sure you would like to apply these updates? (y/n)"
+          display "Updating..."
+          pagoda.app_update(app, updated)
+          display "#{app} has been updated!"
+        end
+      else
+        update_display
+      end
+    end
+    
+    def destroy
+      app = NAME #extract_app
+      if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
+        pagoda.app_destroy(app)
+        display "#{app} has been successfully removed."
+      end
     end
     
     # 
@@ -109,41 +192,6 @@ module Pagoda::Command
       display "#{rtn['crt']}"
     end
     
-    def info
-      name = (args.first && !args.first =~ /^\-\-/) ? args.first : extract_app
-      app = parse pagoda.app_info(name)
-      puts app
-      attrs = app['app']
-      display "=== #{attrs['name']} ==="
-      display "ID:             #{attrs['id']}"
-      display "IP:             #{attrs['ip']}"
-      display "git url:        #{attrs['git_url']}"
-      display "php version:    #{attrs['php_version']}"
-      display "enable gzip:    #{attrs['enable_gzip']}"
-      display "far future:     #{attrs['far_future_expires_enabled']}"
-      display "etag enabled:   #{attrs['etag_enabled']}"
-      display "\n"
-      if attrs['owner']
-        display "== Owner =="
-        display "Username:     #{attrs['owner']['username']}"
-        display "Email:        #{attrs['owner']['email']}"
-        display "\n"
-      end
-      if attrs['credit_card']
-        display "== Card =="
-        display "ID:           #{attrs['credit_card']['id']}"
-        display "Last four:    #{attrs['credit_card']['last_four']}"
-        display "\n"
-      end
-      if attrs['collaborators']
-        display "== Collaborators =="
-        attrs['collaborators']['collaborator'].each do |c|
-          display "#{c}"
-        end
-        display "\n"
-      end
-    end
-    
     def card_info
       app = NAME #extract_app
       card = parse pagoda.app_credit_card_info(app)
@@ -177,99 +225,20 @@ module Pagoda::Command
       display "expiration : #{expiration}"
     end
     
-    def destroy
-      app = NAME #extract_app
-      if confirm "Are you sure you want to destroy #{app}? This cannot be undone! (y/n)"
-        pagoda.app_destroy(app)
-        display "#{app} permanently destroyed."
-      end
-    end
-    
-    def update
-      app = NAME #extract_app
-      updated = {}
-      done = false
-      until done
-        update_display
-        option = ask
-        case option
-        when '1'
-          print "desired name: "
-          updated[:name] = ask
-        when '2'
-          print "git_url: "
-          updated[:git_url] = ask
-        when '3'
-          print "php_version: "
-          updated[:php_version] = ask
-        when '4'
-          display "expects 'true' or 'false'"
-          print "enable_gzip: "
-          gzip = ask
-          if gzip == 'true'
-            updated[:enable_gzip] = true
-          elsif gzip == 'false'
-            updated[:enable_gzip] = false
-          else
-            display "unrecognized input"
-            display "update not applied"
-          end
-        when '5'
-          display "expects 'true' or 'false'"
-          print "far_future_expires_enabled: "
-          ffe = ask
-          if ffe == 'true'
-            updated[:far_future_expires_enabled] = true
-          elsif ffe == 'false'
-            updated[:far_future_expires_enabled] = false
-          else
-            display "unrecognized input"
-            display "update not applied"
-          end
-        when '6'
-          display "expects 'true' or 'false'"
-          print "etag_enabled: "
-          etag = ask
-          if etag == 'true'
-            updated[:etag_enabled] = true
-          elsif etag == 'false'
-            updated[:etag_enabled] = false
-          else
-            display "unrecognized input"
-            display "update not applied"
-          end
-        when '7'
-          print "ssl_crt: "
-          updated[:ssl_crt] = ask
-        end
-        if confirm("Are you done making changes? (y/n)")
-          done = true
-        end
-      end
-      display "changes being made:"
-      puts updated
-      if confirm "Are you sure you would like to make all of these changes? (y/n)"
-        pagoda.app_update(app, updated)
-        display "updates applied to application: #{app}"
-      end
-    end
-    
     protected
 
     def update_display
-          print %{
-   what attribute(s) would you like to upgrade?
-       1:name
-       2:git_url
-       3:php_version
-       4:enable_gzip
-       5:far_future_expires_enabled
-       6:etag_enabled
-       7:ssl_cert
-       
-:}
+      ask %{
+        What would you like to update?
+        1:name
+        2:git_url
+        3:php_version
+        4:enable_gzip
+        5:far_future_expires_enabled
+        6:etag_enabled
+        7:ssl_cert
+       :}
     end
-    
     
     def is_git?
       File.exists?(".git") && File.directory?(".git")

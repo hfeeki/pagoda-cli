@@ -28,54 +28,71 @@ class Pagoda::Client
   #-- APPLICATION COMMANDS --#
   #--------------------------#
   
-  def app_add_directive(app, directive)
-    post("/apps/#{app}/directives.xml", {:directive => directive}).to_s
-  end
-
-  def app_update_directive(app, id, directive)
-    put("/apps/#{app}/directives/#{id}.xml", {:update => directive}).to_s
-  end
-
-  def app_get_directives(app)
-    get("/apps/#{app}/directives.xml").to_s
-  end
-  
-  def app_get_directive(app, id)
-    get("/apps/#{app}/directives/#{id}.xml").to_s
-  end
-  
-  def app_remove_directive(app, id)
-    delete("/apps/#{app}/directives/#{id}.xml").to_s
-  end
-  
-  def app_add_rewrite(app, rewrite)
-    post("/apps/#{app}/rewrites.xml", {:rewrite => rewrite}).to_s
-  end
-  
-  def app_update_rewrite(app, id, rewrite)
-    put("/apps/#{app}/rewrites/#{id}.xml", {:update => rewrite}).to_s
-  end
-  
-  def app_get_rewrites(app)
-    get("/apps/#{app}/rewrites.xml").to_s
-  end
-  
-  def app_get_rewrite(app, id)
-    get("/apps/#{app}/rewrites/#{id}.xml").to_s
-  end
-  
-  def app_remove_rewrite(app, id)
-    delete("/apps/#{app}/rewrites/#{id}.xml").to_s
-  end
-  
+  #** INTERNAL USE ONLY **#
   def app_list
     get("/apps.xml").to_s
+  end
+  
+  #-- application methods --#
+  def app_create(app)
+    post("/apps.xml", {:app => app}).to_s
   end
   
   def app_info(app)
     get("/apps/#{app}.xml").to_s
   end
   
+  def app_update(app, updates)
+    put("/apps/#{app}.xml", {:update => updates}).to_s
+  end
+  
+  def app_destroy(app)
+    delete("/apps/#{app}.xml").to_s
+  end
+  
+  #-- application directive methods --#
+  def app_get_directives(app)
+    get("/apps/#{app}/directives.xml").to_s
+  end
+  
+  def app_add_directive(app, directive)
+    post("/apps/#{app}/directives.xml", {:directive => directive}).to_s
+  end
+  
+  def app_get_directive(app, id)
+    get("/apps/#{app}/directives/#{id}.xml").to_s
+  end
+
+  def app_update_directive(app, id, directive)
+    put("/apps/#{app}/directives/#{id}.xml", {:update => directive}).to_s
+  end
+
+  def app_remove_directive(app, id)
+    delete("/apps/#{app}/directives/#{id}.xml").to_s
+  end
+  
+  #-- application rewrites methods --#
+  def app_get_rewrites(app)
+    get("/apps/#{app}/rewrites.xml").to_s
+  end
+  
+  def app_add_rewrite(app, rewrite)
+    post("/apps/#{app}/rewrites.xml", {:rewrite => rewrite}).to_s
+  end
+  
+  def app_get_rewrite(app, id)
+    get("/apps/#{app}/rewrites/#{id}.xml").to_s
+  end
+  
+  def app_update_rewrite(app, id, rewrite)
+    put("/apps/#{app}/rewrites/#{id}.xml", {:update => rewrite}).to_s
+  end
+  
+  def app_remove_rewrite(app, id)
+    delete("/apps/#{app}/rewrites/#{id}.xml").to_s
+  end
+  
+  #-- --#
   def app_generate_csr(app, csr)
     post("/apps/#{app}/csr.xml", {:csr => csr}).to_s
   end
@@ -98,18 +115,6 @@ class Pagoda::Client
   
   def app_add_card(app, card)
     post("/apps/#{app}/card.xml", {:card => card}).to_s
-  end
-  
-  def app_create(hash)
-    post("/apps.xml", hash).to_s
-  end
-  
-  def app_update(app, updated)
-    put("/apps/#{app}.xml", {:update => updated}).to_s
-  end
-  
-  def app_destroy(app)
-    delete("/apps/#{app}.xml").to_s
   end
   
   #-------------------------#
@@ -187,9 +192,6 @@ class Pagoda::Client
 
   def user_update(updates)
     put("/users/#{@user}.xml", {:user => updates}).to_s
-    @user       = updates[:username] if updates[:username]
-    @password   = updates[:password] if updates[:password]
-    @email      = updates[:email] if updates[:email]
   end
   
   def reset_password(password)

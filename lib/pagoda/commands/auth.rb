@@ -22,12 +22,12 @@ module Pagoda::Command
       write_credentials
     end
 
-    def user    # :nodoc:
+    def user # :nodoc:
       get_credentials
       @credentials[0]
     end
 
-    def password    # :nodoc:
+    def password # :nodoc:
       get_credentials
       @credentials[1]
     end
@@ -41,7 +41,7 @@ module Pagoda::Command
       "#{home_directory}/.pagoda/credentials"
     end
 
-    def get_credentials    # :nodoc:
+    def get_credentials # :nodoc:
       return if @credentials
       unless @credentials = read_credentials
         @credentials = ask_for_credentials
@@ -63,9 +63,9 @@ module Pagoda::Command
     end
 
     def ask_for_credentials
-      user        = ask "Username: "
-      password    = running_on_windows? ? ask_for_password_on_windows : (ask "Password: ")
-      [user, password] # return
+      username = ask "Username: "
+      password = running_on_windows? ? ask_for_password_on_windows : (ask "Password: ")
+      [username, password] # return
     end
 
     def ask_for_password_on_windows

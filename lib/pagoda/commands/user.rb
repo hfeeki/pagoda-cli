@@ -23,7 +23,7 @@ module Pagoda::Command
       display "User #{user['user']['username']} successfully created"
     end
     
-    def whoami?
+    def whoami
       info = parse pagoda.user_info
       if info['user']
         display "=== Current User ==="
@@ -32,14 +32,17 @@ module Pagoda::Command
       else
         display "Oops, for some reason you aren't set as a user."
         display "Use 'pagoda user:switch' to designate your user"
-        display "or use 'pagoda user:create' to create yourself a user."
+        display "or use 'pagoda user:create' to create yourself one."
       end
     end
     
     def switch
       Pagoda::Command.run_internal 'auth:delete_credentials', nil
-      Pagoda::Command.run_internal 'auth:get_credentials', nil
-      display "You have switched users"
+      
+      display "Who are you wanting to switch to?"
+      Pagoda::Command.run_internal 'auth:reauthorize', nil
+      
+      display "You have switched users" # get name
     end
     
     def info
@@ -64,6 +67,16 @@ module Pagoda::Command
       updates[:email]      = ask "New email: " if confirm "Update email (y/n)?"
         
       pagoda.user_update(updates)
+      
+      Pagoda::Command.run_internal 'auth:delete_credentials', nil
+      Pagoda::Command.run_internal "auth:reauthorize", nil
+      # make this so that they then are 'logged' as this user
+    end
+    
+    def quit
+      Pagoda::Command.run_internal 'auth:delete_credentials', nil
+      display "You are no longer set as a Pagoda user."
+      display "Use 'pagoda user:create' to make a new user."
     end
     
     def reset

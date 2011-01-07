@@ -3,7 +3,7 @@ module Pagoda::Command
     
     def reset
       if confirm
-        FileUtils.rm_f("#{home_directory}/.pagoda/credentials")
+        Pagoda::Command.run_internal 'auth:delete_credentials', nil
         display "Your credentials have been reset"
       end
     end
