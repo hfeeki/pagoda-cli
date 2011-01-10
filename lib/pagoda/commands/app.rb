@@ -66,47 +66,6 @@ module Pagoda::Command
       end
     end
     
-    def update
-      app = NAME # extract_app
-      
-      updates = {}
-      case update_display
-        when '1'
-          updates[:name] = ask "Desired Name: "
-        when '2'
-          updates[:git_url] = ask "Git Clone URL: "
-        when '3'
-          updates[:php_version] = ask "PHP Version: "
-        when '4'
-          gzip = ask "GZip Compression Enabled (y/n): "
-          updates[:enable_gzip] = true if gzip == 'y'
-          updates[:enable_gzip] = false if gzip == 'n'
-          display "Incorrect format. Update failed." if gzip != 'y' || gzip != 'n'
-        when '5'
-          ffe = ask "Far Future Expires Enabled (y/n): "
-          updates[:far_future_expires_enabled] = true if ffe == 'y'
-          updates[:far_future_expires_enabled] = false if ffe == 'n'
-          display "Incorrect format. Update failed." if ffe != 'y' || ffe != 'n'
-        when '6'
-          etag = ask "ETags Enabled (y/n): "
-          updates[:etag_enabled] = true if etag == 'y'
-          updates[:etag_enabled] = false if etag == 'n'
-          display "Incorrect format. Update failed." if etag != 'y' || etag != 'n'
-        when '7'
-          updates[:ssl_crt] = ask "ssl_crt: "
-      end
-      
-      if confirm("Are you done making changes? (y/n)")
-        if confirm "Are you sure you would like to apply these updates? (y/n)"
-          display "Updating..."
-          pagoda.app_update(app, updated)
-          display "#{app} has been updated!"
-        end
-      else
-        update_display
-      end
-    end
-    
     def destroy
       app = NAME # extract_app
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
@@ -115,137 +74,11 @@ module Pagoda::Command
       end
     end
     
-    # 
-    # Initing your app will setup your local app to
-    # be deployable on the PagodaGrid
-    # 
-    # Before initing your app, your app must be registered.
-    # You can register on the website, or via pagoda create 'yourapp'
-    # assuming you are already have an account and in good standing
-    # 
-    def init
-      if args.length > 0
-        name = get_app_name
-        if pagoda.app_list.include? name
-          if confirm("Is this #{name}'s root directory? (y/n)")
-            FileUtils.cd(Dir.pwd)
-            init_app if !is_git?
-            add_remote(name)
-            display "#{name} is ready for deployment! # pagoda deploy"
-          else
-            error "Please change into #{name}'s root directory and try again."
-          end
-        else
-          error "#{name} doesn't match any of the existing apps.\n
-                You must first create #{name} if it doesn't already exist. # pagoda create #{name}\n
-                List all available apps # pagoda list"
-        end
-      else
-        error "Please specify an app name: pagoda init appname"
-      end
-    end
-    
-    def generate_csr
-      app = NAME # extract_app
-      
-      display "=== Create SSL CSR ==="
-      csr = {}
-      csr[:country]       = ask "country: "
-      csr[:state]         = ask "state: "
-      csr[:city]          = ask "city: "
-      csr[:organization]  = ask "organization: "
-      csr[:department]    = ask "department: "
-      csr[:common_name]   = ask "common name: "
-      csr[:email]         = ask "email: "
-      
-      # rtn = parse pagoda.app_generate_csr(app, hash)
-      # display "#{rtn['app']['ssl_csr']}"
-    end
-    
-    def get_csr
-      app = NAME # extract_app
-      
-      csr = parse pagoda.app_get_csr(app)
-      display "#{csr['csr']}"
-    end
-    
-    def set_crt
-      app = NAME # extract_app
-      if args.length > 0
-        filename = args.first
-        file = File.open("#{filename}", "rb")
-        content = file.read
-        pagoda.app_add_crt(app, content)
-      else
-        display "Missing filename. pagoda app:set_crt filename.txt"
-      end
-    end
-    
-    def get_crt
-      app = NAME # extract_app
-      
-      crt = parse pagoda.app_get_crt(app)
-      display "#{crt['crt']}"
-    end
-    
-    def card_info
-      app = NAME # extract_app
-      card = parse pagoda.app_credit_card_info(app)
-      attrs = card['credit_card']
-      display "=== card associated with #{app} ==="
-      display "ID:         #{attrs['id']}"
-      display "last four:  #{attrs['last_four']}"
-    end
-    
-    def add_card
-      app = NAME # extract_app
-      print "Enter credit card number: "
-      number = ask
-      valid = false
-      until valid
-        print "Expiration date YYYY-MM: "
-        expiration = ask
-        if expiration  =~ /\d{4}\-\d{2}/
-          valid = true
-        end
-        if valid == false
-          display "invalid expiration format"
-        end
-      end
-      print "CVV number: "
-      cvv = ask
-      card = {:number => number, :expiration => expiration, :code => cvv}
-      pagoda.app_add_card(app, card)
-      display "card added to #{app}"
-      display "card number: #{number}"
-      display "expiration : #{expiration}"
-    end
     
     protected
 
-    def update_display
-      ask %{
-        What would you like to update?
-        1:name
-        2:git_url
-        3:php_version
-        4:enable_gzip
-        5:far_future_expires_enabled
-        6:etag_enabled
-        7:ssl_cert
-       :}
-    end
-    
     def is_git?
       File.exists?(".git") && File.directory?(".git")
-    end
-    
-    def init_app
-      shell "git init"
-    end
-    
-    def add_remote(name)
-      shell "git remote add pagoda git@git.pagodagrid.com:#{name}.git"
     end
     
   end

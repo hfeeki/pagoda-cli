@@ -6,7 +6,7 @@ require 'json/pure' unless {}.respond_to?(:to_json)
 
 class Pagoda::Client
 
-  attr_reader :user, :password, :host
+  attr_reader :user, :password
 
   class << self
     def version
@@ -18,22 +18,15 @@ class Pagoda::Client
     end
   end
   
-  def initialize(user, password, host='www.pagodagrid.com')
+  def initialize(user, password)
     @user       = user
     @password   = password
-    @host       = host
   end
   
-  #--------------------------#
-  #-- APPLICATION COMMANDS --#
-  #--------------------------#
-  
-  #** INTERNAL USE ONLY **#
   def app_list
     get("/apps.xml").to_s
   end
   
-  #-- application methods --#
   def app_create(app)
     post("/apps.xml", {:app => app}).to_s
   end
@@ -50,65 +43,6 @@ class Pagoda::Client
     delete("/apps/#{app}.xml").to_s
   end
   
-  #-- application directive methods --#
-  def app_get_directives(app)
-    get("/apps/#{app}/directives.xml").to_s
-  end
-  
-  def app_add_directive(app, directive)
-    post("/apps/#{app}/directives.xml", {:directive => directive}).to_s
-  end
-  
-  def app_get_directive(app, id)
-    get("/apps/#{app}/directives/#{id}.xml").to_s
-  end
-
-  def app_update_directive(app, id, directive)
-    put("/apps/#{app}/directives/#{id}.xml", {:update => directive}).to_s
-  end
-
-  def app_remove_directive(app, id)
-    delete("/apps/#{app}/directives/#{id}.xml").to_s
-  end
-  
-  #-- application rewrites methods --#
-  def app_get_rewrites(app)
-    get("/apps/#{app}/rewrites.xml").to_s
-  end
-  
-  def app_add_rewrite(app, rewrite)
-    post("/apps/#{app}/rewrites.xml", {:rewrite => rewrite}).to_s
-  end
-  
-  def app_get_rewrite(app, id)
-    get("/apps/#{app}/rewrites/#{id}.xml").to_s
-  end
-  
-  def app_update_rewrite(app, id, rewrite)
-    put("/apps/#{app}/rewrites/#{id}.xml", {:update => rewrite}).to_s
-  end
-  
-  def app_remove_rewrite(app, id)
-    delete("/apps/#{app}/rewrites/#{id}.xml").to_s
-  end
-  
-  #-- --#
-  def app_generate_csr(app, csr)
-    post("/apps/#{app}/csr.xml", {:csr => csr}).to_s
-  end
-
-  def app_get_csr(app)
-    get("/apps/#{app}/csr.xml").to_s
-  end
-  
-  def app_add_crt(app, crt)
-    post("/apps/#{app}/crt.xml", {:crt => crt}).to_s
-  end
-
-  def app_get_crt(app)
-    get("/apps/#{app}/crt.xml").to_s
-  end
-  
   def app_credit_card_info(app)
     get("/apps/#{app}/card.xml").to_s
   end
@@ -117,10 +51,6 @@ class Pagoda::Client
     post("/apps/#{app}/card.xml", {:card => card}).to_s
   end
   
-  #-------------------------#
-  #-- DEPLOYMENT/ROLLBACK --#
-  #-------------------------#
-  
   def rollback(app)
     get("/apps/#{app}/rollback.xml").to_s
   end
@@ -128,10 +58,6 @@ class Pagoda::Client
   def deploy(app)
     get("app/#{app}/deploy.xml").to_s
   end
-  
-  #---------------------------#
-  #-- COLLABORATOR COMMANDS --#
-  #---------------------------#
   
   def list_collaborators(app)
     get("/apps/#{app}/collaborators.xml").to_s
@@ -145,41 +71,8 @@ class Pagoda::Client
     delete("/apps/#{app}/collaborators/#{email}.xml").to_s
   end
   
-  #------------------------#
-  #-- TRANSFER OWNERSHIP --#
-  #------------------------#
-  
   def transfer_owner(app, email)
     put("/apps/#{app}/owner/#{email}.xml").to_s
-  end
-  
-  #-------------------#
-  #-- KEYS COMMANDS --#
-  #-------------------#
-  
-  def keys
-    get("/users/#{@user}/keys.xml").to_s
-  end
-
-  def add_key(key)
-    post("/users/#{@user}/keys", {:user => {:key => key}}).to_s
-  end
-  
-  def remove_key(email)
-    delete("/users/#{@user}/keys/#{email}").to_s
-  end
-  
-  def remove_all_keys
-    delete("/users/#{@user}/keys").to_s
-  end
-  
-  #-------------------#
-  #-- USER COMMANDS --#
-  #-------------------#
-  
-  #** INTERNAL USE ONLY **/
-  def user_list
-    get("/users.xml").to_s
   end
   
   def user_create(email)
@@ -196,11 +89,7 @@ class Pagoda::Client
   
   def reset_password(password)
     put("/users/#{@user}/password/reset.xml", {:user =>{:password => password}}).to_s
-    @passwrod = password
-  end
-  
-  def forgot_password
-    get("/users/#{@user}/password/forgot.xml").to_s
+    @password = password
   end
   
   def user_delete_card(card)

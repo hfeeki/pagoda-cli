@@ -83,30 +83,10 @@ module Pagoda
         block_given? ? yield(opt_value) : opt_value
       end
 
-      def web_url(name)
-        "http://#{name}.#{pagoda.host}/"
-      end
-
-      def git_url(name)
-        "git@#{pagoda.host}:#{name}.git"
-      end
-
-      def app_urls(name)
-        "#{web_url(name)} | #{git_url(name)}"
-      end
-
       def escape(value)
         pagoda.escape(value)
       end
     end
 
-    class BaseWithApp < Base
-      attr_accessor :app
-
-      def initialize(args, pagoda=nil)
-        super(args, pagoda)
-        @app ||= extract_app
-      end
-    end
   end
 end
