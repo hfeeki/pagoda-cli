@@ -67,7 +67,7 @@ module Pagoda::Command
     end
     
     def update
-      app = NAME #extract_app
+      app = NAME # extract_app
       
       updates = {}
       case update_display
@@ -108,7 +108,7 @@ module Pagoda::Command
     end
     
     def destroy
-      app = NAME #extract_app
+      app = NAME # extract_app
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
         pagoda.app_destroy(app)
         display "#{app} has been successfully removed."
@@ -146,7 +146,7 @@ module Pagoda::Command
     end
     
     def generate_csr
-      app = NAME #extract_app
+      app = NAME # extract_app
       
       display "=== Create SSL CSR ==="
       csr = {}
@@ -163,14 +163,14 @@ module Pagoda::Command
     end
     
     def get_csr
-      app = NAME #extract_app
+      app = NAME # extract_app
       
       csr = parse pagoda.app_get_csr(app)
       display "#{csr['csr']}"
     end
     
     def set_crt
-      app = NAME #extract_app
+      app = NAME # extract_app
       if args.length > 0
         filename = args.first
         file = File.open("#{filename}", "rb")
@@ -182,13 +182,14 @@ module Pagoda::Command
     end
     
     def get_crt
-      app = NAME #extract_app
-      rtn = parse pagoda.app_get_crt(app)
-      display "#{rtn['crt']}"
+      app = NAME # extract_app
+      
+      crt = parse pagoda.app_get_crt(app)
+      display "#{crt['crt']}"
     end
     
     def card_info
-      app = NAME #extract_app
+      app = NAME # extract_app
       card = parse pagoda.app_credit_card_info(app)
       attrs = card['credit_card']
       display "=== card associated with #{app} ==="
@@ -197,7 +198,7 @@ module Pagoda::Command
     end
     
     def add_card
-      app = NAME #extract_app
+      app = NAME # extract_app
       print "Enter credit card number: "
       number = ask
       valid = false
