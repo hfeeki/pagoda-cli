@@ -101,32 +101,6 @@ describe Pagoda::Client do
       @client.destroy('testapp')
     end
     
-    it "should list ssh keys" do
-      stub = %{
-        <?xml version='1.0' encoding='UTF-8'?>
-        <keys type="array">
-          <key>ssh-rsa AAAA== test@test.com</key>
-        </keys>
-      }
-      stub_api_request(:get, '/keys').to_return(:body => stub)
-      @client.keys.should == ['ssh-rsa AAAA== test@test.com']
-    end
-
-    it "should add ssh key" do
-      stub_api_request(:post, '/keys').with(:body => 'ssh-rsa AAAA== test@test.com')
-      @client.add_key('ssh-rsa AAAA== test@test.com')
-    end
-
-    it "should remove an ssh key" do
-      stub_api_request(:delete, '/keys/test@test.com')
-      @client.remove_key('test@test.com')
-    end
-
-    it "should remove all ssh keys" do
-      stub_api_request(:delete, '/keys')
-      @client.remove_all_keys
-    end
-    
   end
   
 end
