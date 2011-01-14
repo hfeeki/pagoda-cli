@@ -14,9 +14,9 @@ module Pagoda
       RUBY_PLATFORM =~ /-darwin\d/
     end
 
-    def display(msg, newline=true)
+    def display(msg="", newline=true)
       if newline
-        puts(msg)
+        puts("  #{msg}")
       else
         print(msg)
         STDOUT.flush
@@ -29,7 +29,7 @@ module Pagoda
     end
 
     def ask(message=nil)
-      display message, false if message
+      display "  #{message}", false if message
       gets.strip
     end
     
@@ -39,7 +39,9 @@ module Pagoda
     end
 
     def error(msg)
-      STDERR.puts(msg)
+      STDERR.puts
+      STDERR.puts("** Error: #{msg}")
+      STDERR.puts
       exit 1
     end
     

@@ -1,34 +1,36 @@
 module Pagoda::Command
   class App < Base
     
-    # internal use only
     def list
-      info = parse pagoda.user_info
-      display "=== #{info['user']['username']} Applications ==="
-      
-      if apps = parse(pagoda.app_list)
-        apps['apps'].each do |app|
-          display "name: #{app['name']}"
-          # display " - ID: #{app['id']}"
-          # display " - IP: #{app['ip_address']}"
+      display
+      display "=== apps ==="
+      display
+      apps = client.app_list
+      if !apps.empty?
+        apps.each do |app|
+          display app.name
         end
       else
-        display "#{info['user']['username']} has not created any applications yet."
-        display "Use 'pagoda app:create' to create one."
+        display "looks like you don't have any apps yet"
+        display "type 'pagoda create' to start"
       end
+      display
     end
     
     def create      
-        display "=== Create App ==="
-        app = {}
-        app[:name] = ask "Application Name: "
-        app[:git_url] = ask "Application git clone URL: "
+      display
+      clone_url = extract_git_clone_url
+      display "--> detected git clone url"
+      # display "--> determining app name"
+      name = ask "please specify a name for this application, or hit enter to use '#{extract_possible_name}' :"
+      if name.length > 1
         
-        pagoda.app_create(app)
+      else
         
-        display "Application #{app[:name]} successfully create at http://#{app[:name]}.pagodabox.com!"
-        display "Use 'pagoda app.list' to view a list of all your applications"
-        display "or use 'pagoda app.info --[name]' to view an applications information."
+      end
+      name = extract_possible_name unless name.length > 1
+      display "--> registering #{name}"
+      
     end
     
     def info
@@ -72,13 +74,6 @@ module Pagoda::Command
         pagoda.app_destroy(app)
         display "#{app} has been successfully removed."
       end
-    end
-    
-    
-    protected
-
-    def is_git?
-      File.exists?(".git") && File.directory?(".git")
     end
     
   end

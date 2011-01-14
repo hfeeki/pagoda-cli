@@ -39,9 +39,9 @@ module Pagoda
         end
       end
 
-      def run_internal(command, args, heroku=nil)
+      def run_internal(command, args)
         klass, method = parse(command)
-        runner = klass.new(args, heroku)
+        runner = klass.new(args)
         raise InvalidCommand unless runner.respond_to?(method)
         runner.send(method)
       end

@@ -8,7 +8,7 @@ Dir["#{File.dirname(__FILE__)}/../lib/pagoda/commands/*"].each { |c| require c }
 include WebMock::API
 
 def stub_api_request(method, path)
-  stub_request(method, "https://api.pagodagrid.com#{path}")
+  stub_request(method, "http://www.pagodabox.com#{path}")
 end
 
 def prepare_command(klass)

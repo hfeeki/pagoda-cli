@@ -1,3 +1,5 @@
+require 'iniparse'
+
 module Pagoda
   module Command
     class Base
@@ -18,64 +20,72 @@ module Pagoda
       end
       
       def app
-        
+        find_app extract_git_clone_url
+      end
+      
+      def find_app(git_url)
+        read_apps.each do |line|
+          app = line.split(" ")
+          return app[0] if app[1] == git_url
+        end
+        false
+      end
+      
+      def read_apps
+        return [] if !File.exists?(apps_file)
+        File.read(apps_file).split(/\n/).inject([]) {|apps, line| apps << line if line.include?("git@github.com"); apps}
+      end
+      
+      def write_app(name, git_url)
+        FileUtils.mkdir_p(File.dirname(apps_file)) if !File.exists?(apps_file)
+        current_apps = read_apps
+        File.open(apps_file, 'w') do |file|
+          current_apps.each do |app|
+            file.puts app
+          end
+          file.puts "#{name} #{git_url}"
+        end
+        set_apps_file_permissions
+      end
+      alias :add_app :write_app
+      
+      def set_apps_file_permissions
+        FileUtils.chmod 0700, File.dirname(apps_file)
+        FileUtils.chmod 0600, apps_file
+      end
+      
+      def apps_file
+        "#{home_directory}/.pagoda/apps"
+      end
+      
+      def extract_possible_name
+        cleanup_name(extract_git_clone_url.split(":")[1].split("/")[1].split(".")[0])
+      end
+      
+      def cleanup_name(name)
+        name.gsub(/-/, '').gsub(/_/, '').gsub(/ /, '').downcase
+      end
+      
+      def extract_git_clone_url(soft=false)
+        begin
+          url = IniParse.parse( File.read("#{app_root}/.git/config") )['remote "origin"']["url"]
+          raise unless url.match(/^git@github.com:.+\.git$/)
+          url
+        rescue Exception => e
+          if soft
+            return false
+          else
+            error "It appears you are using git (fantastic). However we only support git repos hosted with github. \r\n          Please ensure your repo is hosted with github, and that the origin is set to that url."
+          end
+        end
       end
 
-      def locate_app_root(dir=Dir.pwd)
-        git_config = "#{dir}/.git/config"
-        return dir if File.exists?(git_config)
+      def app_root(dir=Dir.pwd)
+        return dir if File.exists? "#{dir}/.git/config"
         parent = dir.split('/')[0..-2].join('/')
-        return false if parent.empty?
-        locate_app_root(parent)
+        error "Unable to find git config in this directory or in any parent directory" if parent.empty?
+        app_root(parent)
       end
-
-      # def extract_app(force=true)
-      #   app = extract_option('--app', false)
-      #   raise(CommandFailed, "You must specify an app name after --app") if app == false
-      #   unless app
-      #     app = extract_app_in_dir(Dir.pwd) ||
-      #     raise(CommandFailed, "No app specified.\nRun this command from app folder or set it adding --app <app name>") if force
-      #     @autodetected_app = true
-      #   end
-      #   app
-      # end
-      # 
-      # def extract_app_in_dir(dir)
-      #   return unless remotes = git_remotes(dir)
-      # 
-      #   if remote = extract_option('--remote')
-      #     remotes[remote]
-      #   else
-      #     apps = remotes.values.uniq
-      #     case apps.size
-      #       when 0; return nil
-      #       when 1; return apps.first
-      #       else
-      #         current_dir_name = dir.split('/').last.downcase
-      #         apps.select { |a| a.downcase == current_dir_name }.first
-      #     end
-      #   end
-      # end
-      # 
-      # def git_remotes(base_dir)
-      #   git_config = "#{base_dir}/.git/config"
-      #   unless File.exists?(git_config)
-      #     parent = base_dir.split('/')[0..-2].join('/')
-      #     return git_remotes(parent) unless parent.empty?
-      #   else
-      #     remotes = {}
-      #     current_remote = nil
-      #     File.read(git_config).split(/\n/).each do |l|
-      #       current_remote = $1 if l.match(/\[remote \"([\w\d-]+)\"\]/)
-      #       app = (l.match(/url = git@#{pagoda.host}:([\w\d-]+)\.git/) || [])[1]
-      #       if current_remote && app
-      #         remotes[current_remote.downcase] = app
-      #         current_remote = nil
-      #       end
-      #     end
-      #     return remotes
-      #   end
-      # end
 
       def extract_option(options, default=true)
         values = options.is_a?(Array) ? options : [options]
@@ -92,11 +102,6 @@ module Pagoda
         args.delete(opt_index)
         block_given? ? yield(opt_value) : opt_value
       end
-
-      def escape(value)
-        pagoda.escape(value)
-      end
     end
-
   end
 end

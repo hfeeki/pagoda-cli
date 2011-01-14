@@ -14,9 +14,7 @@ describe Pagoda::Client do
         <?xml version='1.0' encoding='UTF-8'?>
         <app>
           <name>testapp</name>
-          <ip>24.116.177.210</ip>
-          <instances>4</instances>
-          <created-at type='datetime'>2008-07-08T17:21:50-07:00</created-at>
+          <git-url>git@github.com:tylerflint/pagoda-pilot.git</git-url>
           <owner>
             <username>owner1</username>
             <email>owner1@test.com</email>
@@ -33,12 +31,10 @@ describe Pagoda::Client do
           </collaborators>
         </app>
       }
-      stub_api_request(:get, "/apps/testapp").to_return(:body => stub)
-      @client.info('testapp').should == {
+      stub_api_request(:get, "/apps/testapp.xml").to_return(:body => stub)
+      @client.app_info('testapp').should == {
         :name           => 'testapp',
-        :ip             => '24.116.177.210',
-        :instances      => '4',
-        :created_at     => '2008-07-08T17:21:50-07:00',
+        :git_url        => 'git@github.com:tylerflint/pagoda-pilot.git',
         :owner          => {
           :username     => 'owner1',
           :email        => 'owner1@test.com'
@@ -49,21 +45,21 @@ describe Pagoda::Client do
         ]
       }
     end
-
-    it "should rollback code base" do
-      stub_api_request(:get, '/apps/testapp/rollback')
-      @client.rollback('testapp')
-    end
-
-    it "should add a collaborator" do
-      stub_api_request(:post, '/apps/testapp/collaborators').with(:body => 'collaborator%5Bemail%5D=test%40test.com')
-      @client.add_collaborator('testapp', 'test@test.com')
-    end
-
-    it "should remove a collaborator" do
-      stub_api_request(:delete, '/apps/testapp/collaborators/test%40test%2Ecom')
-      @client.remove_collaborator('testapp', 'test@test.com')
-    end
+  
+    # it "should rollback code base" do
+    #   stub_api_request(:get, '/apps/testapp/rollback')
+    #   @client.rollback('testapp')
+    # end
+    #   
+    # it "should add a collaborator" do
+    #   stub_api_request(:post, '/apps/testapp/collaborators').with(:body => 'collaborator%5Bemail%5D=test%40test.com')
+    #   @client.add_collaborator('testapp', 'test@test.com')
+    # end
+    #   
+    # it "should remove a collaborator" do
+    #   stub_api_request(:delete, '/apps/testapp/collaborators/test%40test%2Ecom')
+    #   @client.remove_collaborator('testapp', 'test@test.com')
+    # end
     
   end
   
@@ -73,12 +69,20 @@ describe Pagoda::Client do
       stub = %{
         <?xml version='1.0' encoding='UTF-8'?>
         <apps type="array">
-          <app><name>burt</name></app>
-          <app><name>ernie</name></app>
+          <app>
+            <id>1</id>
+            <name>burt</name>
+            <git-url>git@github.com:tylerflint/pagoda-pilot.git</git-url>
+          </app>
+          <app>
+            <id>2</id>
+            <name>ernie</name>
+            <git-url>git@github.com:tylerflint/pagoda-pilot.git</git-url>
+          </app>
         </apps>
       }
-      stub_api_request(:get, "/apps").to_return(:body => stub)
-      @client.list.should == ['burt', 'ernie']
+      stub_api_request(:get, "/apps.xml").to_return(:body => stub)
+      @client.app_list.should == [{:id => '1', :name => 'burt', :git_url => 'git@github.com:tylerflint/pagoda-pilot.git'}, {:id => '2', :name => 'ernie', :git_url => 'git@github.com:tylerflint/pagoda-pilot.git'}]
     end
     
     it "should create a new app" do
@@ -86,19 +90,30 @@ describe Pagoda::Client do
         <?xml version='1.0' encoding='UTF-8'?>
         <app>
           <name>testapp</name>
-          <ip>24.116.177.210</ip>
+           <git-url>git@github.com:tylerflint/pagoda-pilot.git</git-url>
+           <owner>
+             <username>tylerflint</username>
+             <email>tylerflint@gmail.com</email>
+           </owner>
+           <collaborators>
+           </collaborators>
         </app>
       }
-      stub_api_request(:post, '/apps').with(:body => "name=testapp").to_return(:body => stub)
-      @client.create('testapp').should == {
+      stub_api_request(:post, '/apps.xml').with(:body => "app[name]=testapp&app[git_url]=git%40github.com%3Atylerflint%2Fpagoda-pilot.git").to_return(:body => stub)
+      @client.app_create('testapp', 'git@github.com:tylerflint/pagoda-pilot.git').should == {
         :name => 'testapp',
-        :ip   => '24.116.177.210'
+        :git_url => 'git@github.com:tylerflint/pagoda-pilot.git',
+        :owner => {
+          :username => 'tylerflint',
+          :email => 'tylerflint@gmail.com'
+        },
+        :collaborators => []
       }
     end
-
+    
     it "should destroy an active app" do
-      stub_api_request(:delete, '/apps/testapp')
-      @client.destroy('testapp')
+      stub_api_request(:delete, '/apps/testapp.xml')
+      @client.app_destroy('testapp')
     end
     
   end

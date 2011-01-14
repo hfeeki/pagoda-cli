@@ -24,15 +24,48 @@ class Pagoda::Client
   end
   
   def app_list
-    get("/apps.xml").to_s
+    doc = xml(get("/apps.xml").to_s)
+    doc.elements['apps'].elements.to_a('//app/').inject([]) do |list, app| 
+      list <<  {
+          :id => app.elements['id'].text,
+          :name => app.elements['name'].text,
+          :git_url => app.elements['git-url'].text
+        }
+    end
   end
   
-  def app_create(app)
-    post("/apps.xml", {:app => app}).to_s
+  def app_create(name, git_url)
+    doc = xml(post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s)
+    doc.elements.to_a('//app/*').inject({}) do |hash, element|
+      case element.name
+        when "owner"
+          hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+        when "collaborators"
+          hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+            list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+          end
+        else
+          hash[element.name.gsub(/-/, '_').to_sym] = element.text
+      end
+      hash
+    end
   end
   
   def app_info(app)
-    get("/apps/#{app}.xml").to_s
+    doc = xml(get("/apps/#{app}.xml").to_s)
+    doc.elements.to_a('//app/*').inject({}) do |hash, element|
+      case element.name
+        when "owner"
+          hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+        when "collaborators"
+          hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+            list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+          end
+        else
+          hash[element.name.gsub(/-/, '_').to_sym] = element.text
+      end
+      hash
+    end
   end
   
   def app_update(app, updates)
@@ -115,7 +148,7 @@ class Pagoda::Client
     if uri =~ /^https?/
       RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("www.pagodabox.com#{uri}", @user, @password)
+      RestClient::Resource.new("127.0.0.1:3000#{uri}", @user, @password)
     end
   end
 
