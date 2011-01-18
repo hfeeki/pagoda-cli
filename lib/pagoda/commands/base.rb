@@ -20,13 +20,13 @@ module Pagoda
       end
       
       def app
-        find_app extract_git_clone_url
+        find_app
       end
       
-      def find_app(git_url)
+      def find_app
         read_apps.each do |line|
           app = line.split(" ")
-          return app[0] if app[1] == git_url
+          return app[0] if app[2] == locate_app_root
         end
         false
       end
@@ -36,18 +36,32 @@ module Pagoda
         File.read(apps_file).split(/\n/).inject([]) {|apps, line| apps << line if line.include?("git@github.com"); apps}
       end
       
-      def write_app(name, git_url)
+      def write_app(name, git_url=nil, app_root=nil)
+        git_url = extract_git_clone_url unless git_url
+        app_root = locate_app_root unless app_root
         FileUtils.mkdir_p(File.dirname(apps_file)) if !File.exists?(apps_file)
         current_apps = read_apps
         File.open(apps_file, 'w') do |file|
           current_apps.each do |app|
             file.puts app
           end
-          file.puts "#{name} #{git_url}"
+          file.puts "#{name} #{git_url} #{app_root}"
         end
         set_apps_file_permissions
       end
       alias :add_app :write_app
+      
+      def remove_app(name)
+        current_apps = read_apps
+        current_apps.delete_if do |app|
+          app.split(" ")[0] == name
+        end
+        File.open(apps_file, 'w') do |file|
+          current_apps.each do |app|
+            file.puts app
+          end
+        end
+      end
       
       def set_apps_file_permissions
         FileUtils.chmod 0700, File.dirname(apps_file)
@@ -68,7 +82,7 @@ module Pagoda
       
       def extract_git_clone_url(soft=false)
         begin
-          url = IniParse.parse( File.read("#{app_root}/.git/config") )['remote "origin"']["url"]
+          url = IniParse.parse( File.read("#{locate_app_root}/.git/config") )['remote "origin"']["url"]
           raise unless url.match(/^git@github.com:.+\.git$/)
           url
         rescue Exception => e
@@ -80,11 +94,11 @@ module Pagoda
         end
       end
 
-      def app_root(dir=Dir.pwd)
+      def locate_app_root(dir=Dir.pwd)
         return dir if File.exists? "#{dir}/.git/config"
         parent = dir.split('/')[0..-2].join('/')
         error "Unable to find git config in this directory or in any parent directory" if parent.empty?
-        app_root(parent)
+        locate_app_root(parent)
       end
 
       def extract_option(options, default=true)

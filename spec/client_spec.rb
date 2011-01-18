@@ -7,7 +7,7 @@ describe Pagoda::Client do
     @client   = Pagoda::Client.new(nil, nil)
   end
   
-  describe "an app" do
+  describe "app" do
     
     it "should display information" do
       stub = %{
@@ -29,6 +29,15 @@ describe Pagoda::Client do
               <email>guy2@test.com</email>
             </collaborator>
           </collaborators>
+          <transactions type="array">
+            <transaction>
+              <id>1</id>
+              <name>app.init</name>
+              <description>Deploying app to the Pagoda grid</description>
+              <state>started</state>
+              <status></status>
+            </transaction>
+          </transactions>
         </app>
       }
       stub_api_request(:get, "/apps/testapp.xml").to_return(:body => stub)
@@ -42,8 +51,53 @@ describe Pagoda::Client do
         :collaborators => [
           {:username   => 'guy1', :email => 'guy1@test.com'},
           {:username   => 'guy2', :email => 'guy2@test.com'}
+        ],
+        :transactions => [
+          {:id => '1', :name => 'app.init', :description => 'Deploying app to the Pagoda grid', :state => 'started', :status => nil}
         ]
       }
+    end
+    
+    it "lists incomplete transactions" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transactions type="array">
+          <transaction>
+            <id>1</id>
+            <name>app.increment</name>
+            <description>spawn new instance of app</description>
+            <state>started</state>
+            <status></status>
+          </transaction>
+          <transaction>
+            <id>2</id>
+            <name>app.deploy</name>
+            <description>deploy code</description>
+            <state>ready</state>
+            <status></status>
+          </transaction>
+        </transactions>
+      }
+      stub_api_request(:get, "/apps/testapp/transactions.xml").to_return(:body => stub)
+      @client.transaction_list('testapp').should == [
+        {:id => '1', :name => 'app.increment', :description => 'spawn new instance of app', :state => 'started', :status => nil},
+        {:id => '2', :name => 'app.deploy', :description => 'deploy code', :state => 'ready', :status => nil}
+      ]
+    end
+    
+    it "lists details of a transaction" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.increment</name>
+          <description>spawn new instance of app</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:get, "/apps/testapp/transactions/123.xml").to_return(:body => stub)
+      @client.transaction_status('testapp', '123').should == {:id => '1', :name => 'app.increment', :description => 'spawn new instance of app', :state => 'started', :status => nil}
     end
   
     # it "should rollback code base" do
@@ -63,7 +117,7 @@ describe Pagoda::Client do
     
   end
   
-  describe "a user" do
+  describe "user" do
     
     it "should list all active apps" do
       stub = %{
@@ -97,6 +151,15 @@ describe Pagoda::Client do
            </owner>
            <collaborators>
            </collaborators>
+           <transactions type="array">
+             <transaction>
+               <id>1</id>
+               <name>app.init</name>
+               <description>Deploying app to the Pagoda grid</description>
+               <state>started</state>
+               <status></status>
+             </transaction>
+           </transactions>
         </app>
       }
       stub_api_request(:post, '/apps.xml').with(:body => "app[name]=testapp&app[git_url]=git%40github.com%3Atylerflint%2Fpagoda-pilot.git").to_return(:body => stub)
@@ -107,7 +170,10 @@ describe Pagoda::Client do
           :username => 'tylerflint',
           :email => 'tylerflint@gmail.com'
         },
-        :collaborators => []
+        :collaborators => [],
+        :transactions => [
+          {:id => '1', :name => 'app.init', :description => 'Deploying app to the Pagoda grid', :state => 'started', :status => nil}
+        ]
       }
     end
     

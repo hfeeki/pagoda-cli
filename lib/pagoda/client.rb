@@ -44,6 +44,16 @@ class Pagoda::Client
           hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
             list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
           end
+        when "transactions"
+          hash[:transactions] = element.elements.to_a('//transaction/').inject([]) do |list, transaction|
+            list << {
+                :id          => transaction.elements["id"].text,
+                :name        => transaction.elements["name"].text,
+                :description => transaction.elements["description"].text,
+                :state       => transaction.elements["state"].text,
+                :status      => transaction.elements["status"].text
+              }
+          end
         else
           hash[element.name.gsub(/-/, '_').to_sym] = element.text
       end
@@ -61,6 +71,16 @@ class Pagoda::Client
           hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
             list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
           end
+        when "transactions"
+          hash[:transactions] = element.elements.to_a('//transaction/').inject([]) do |list, transaction|
+            list << {
+                :id          => transaction.elements["id"].text,
+                :name        => transaction.elements["name"].text,
+                :description => transaction.elements["description"].text,
+                :state       => transaction.elements["state"].text,
+                :status      => transaction.elements["status"].text
+              }
+          end
         else
           hash[element.name.gsub(/-/, '_').to_sym] = element.text
       end
@@ -76,12 +96,22 @@ class Pagoda::Client
     delete("/apps/#{app}.xml").to_s
   end
   
-  def app_credit_card_info(app)
-    get("/apps/#{app}/card.xml").to_s
+  def transaction_list(app)
+    doc = xml(get("/apps/#{app}/transactions.xml").to_s)
+    doc.elements['transactions'].elements.to_a('//transaction/').inject([]) do |list, transaction| 
+      list <<  {
+          :id          => transaction.elements['id'].text,
+          :name        => transaction.elements['name'].text,
+          :description => transaction.elements['description'].text,
+          :state       => transaction.elements['state'].text,
+          :status      => transaction.elements['status'].text
+        }
+    end
   end
   
-  def app_add_card(app, card)
-    post("/apps/#{app}/card.xml", {:card => card}).to_s
+  def transaction_status(app, transaction)
+    doc = xml(get("/apps/#{app}/transactions/#{transaction}.xml").to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def rollback(app)
@@ -106,6 +136,14 @@ class Pagoda::Client
   
   def transfer_owner(app, email)
     put("/apps/#{app}/owner/#{email}.xml").to_s
+  end
+  
+  def app_credit_card_info(app)
+    get("/apps/#{app}/card.xml").to_s
+  end
+  
+  def app_add_card(app, card)
+    post("/apps/#{app}/card.xml", {:card => card}).to_s
   end
   
   def user_create(email)
@@ -148,7 +186,8 @@ class Pagoda::Client
     if uri =~ /^https?/
       RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("127.0.0.1:3000#{uri}", @user, @password)
+      RestClient::Resource.new("http://www.pagodabox.com#{uri}", @user, @password)
+      # RestClient::Resource.new("127.0.0.1:3000#{uri}", @user, @password)
     end
   end
 
