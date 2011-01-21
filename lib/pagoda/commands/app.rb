@@ -59,6 +59,7 @@ module Pagoda::Command
       display "--> app fast forwarded"
     end
     alias :fastforward :fast_forward
+    alias :forward :fast_forward
     
     def destroy
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
