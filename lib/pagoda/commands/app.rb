@@ -49,6 +49,8 @@ module Pagoda::Command
       loop_transaction(transaction)
       display "--> app rewound"
     end
+    alias :rollback :rewind
+    alias :undo :rewind
     
     def fast_forward
       transaction = client.fast_forward(app)
@@ -56,6 +58,7 @@ module Pagoda::Command
       loop_transaction(transaction)
       display "--> app fast forwarded"
     end
+    alias :fastforward :fast_forward
     
     def destroy
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"

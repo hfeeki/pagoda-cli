@@ -46,10 +46,11 @@ module Pagoda
     end
     
     def loop_transaction(transaction)
+      finished = false
       until finished
         display ".", false
         sleep 1
-        updated = client.transaction_status(app, transaction)
+        updated = client.transaction_status(app, transaction[:id])
         case updated[:state]
         when /.*paused$/
           # handle paused logic
