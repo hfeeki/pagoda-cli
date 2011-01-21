@@ -100,6 +100,21 @@ describe Pagoda::Client do
       @client.transaction_status('testapp', '123').should == {:id => '1', :name => 'app.increment', :description => 'spawn new instance of app', :state => 'started', :status => nil}
     end
     
+    it "deploys" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.deploy</name>
+          <description>deploy new code</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:put, "/apps/testapp/deploy.xml").to_return(:body => stub)
+      @client.deploy('testapp').should == {:id => '1', :name => 'app.deploy', :description => 'deploy new code', :state => 'started', :status => nil}      
+    end
+    
     it "rewinds deploy list" do
       stub = %{
         <?xml version='1.0' encoding='UTF-8'?>

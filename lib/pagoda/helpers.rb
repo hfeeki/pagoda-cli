@@ -45,12 +45,21 @@ module Pagoda
       exit 1
     end
     
-    # parse all xml documents given back from the API
-    # return:
-    #   hash containing all values from the xml doc
-    def parse(xml)
-      Crack::XML.parse(xml)
+    def loop_transaction(transaction)
+      until finished
+        display ".", false
+        sleep 1
+        updated = client.transaction_status(app, transaction)
+        case updated[:state]
+        when /.*paused$/
+          # handle paused logic
+        when 'complete'
+          display
+          finished = true
+        end
+      end
     end
+    
   end
 end
 

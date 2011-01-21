@@ -129,7 +129,8 @@ class Pagoda::Client
   end
   
   def deploy(app)
-    get("app/#{app}/deploy.xml").to_s
+    doc = xml(put("/apps/#{app}/deploy.xml").to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def list_collaborators(app)
