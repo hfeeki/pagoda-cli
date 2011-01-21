@@ -51,11 +51,49 @@ module Pagoda::Command
       puts info
     end
     
+    def rewind
+      transaction = client.rewind(app)
+      display "--> rewinding...", false
+      rewound = false
+      until rewound
+        display ".", false
+        sleep 1
+        updated = client.transaction_status(app, transaction)
+        case updated[:state]
+        when /.*paused$/
+          # handle paused logic
+        when 'complete'
+          display
+          deployed = true
+        end
+      end
+      display "--> app rewound"
+    end
+    
+    def fast_forward
+      transaction = client.fast_forward(app)
+      display "--> fast forwarding...", false
+      forwarded = false
+      until forwarded
+        display ".", false
+        sleep 1
+        updated = client.transaction_status(app, transaction)
+        case updated[:state]
+        when /.*paused$/
+          # handle paused logic
+        when 'complete'
+          display
+          deployed = true
+        end
+      end
+      display "--> app fast forwarded"
+    end
+    
     def destroy
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
         client.app_destroy(app)
-        remove_app(app)
         display "#{app} has been successfully destroyed."
+        remove_app(app)
       end
     end
     

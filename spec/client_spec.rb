@@ -99,6 +99,36 @@ describe Pagoda::Client do
       stub_api_request(:get, "/apps/testapp/transactions/123.xml").to_return(:body => stub)
       @client.transaction_status('testapp', '123').should == {:id => '1', :name => 'app.increment', :description => 'spawn new instance of app', :state => 'started', :status => nil}
     end
+    
+    it "rewinds deploy list" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.traverse</name>
+          <description>traverse the code</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:put, "/apps/testapp/rewind.xml").to_return(:body => stub)
+      @client.rewind('testapp', 1).should == {:id => '1', :name => 'app.traverse', :description => 'traverse the code', :state => 'started', :status => nil}
+    end
+    
+    it "fast-forwards deploy list" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.traverse</name>
+          <description>traverse the code</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:put, "/apps/testapp/fast-forward.xml").to_return(:body => stub)
+      @client.fast_forward('testapp', 1).should == {:id => '1', :name => 'app.traverse', :description => 'traverse the code', :state => 'started', :status => nil}
+    end
   
     # it "should rollback code base" do
     #   stub_api_request(:get, '/apps/testapp/rollback')

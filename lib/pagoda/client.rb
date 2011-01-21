@@ -114,6 +114,16 @@ class Pagoda::Client
     doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
+  def rewind(app, places=1)
+    doc = xml(put("/apps/#{app}/rewind.xml", {:places => places}).to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
+  end
+  
+  def fast_forward(app, places=1)
+    doc = xml(put("/apps/#{app}/fast-forward.xml", {:places => places}).to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
+  end
+  
   def rollback(app)
     get("/apps/#{app}/rollback.xml").to_s
   end
