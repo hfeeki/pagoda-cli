@@ -133,57 +133,14 @@ class Pagoda::Client
     doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
-  def list_collaborators(app)
-    get("/apps/#{app}/collaborators.xml").to_s
+  def scale_up(app, qty=1)
+    doc = xml(put("/apps/#{app}/scale-up.xml").to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
-  def add_collaborator(app, email)
-    post("/apps/#{app}/collaborators.xml", {:email => email}).to_s
-  end
-  
-  def remove_collaborator(app, email)
-    delete("/apps/#{app}/collaborators/#{email}.xml").to_s
-  end
-  
-  def transfer_owner(app, email)
-    put("/apps/#{app}/owner/#{email}.xml").to_s
-  end
-  
-  def app_credit_card_info(app)
-    get("/apps/#{app}/card.xml").to_s
-  end
-  
-  def app_add_card(app, card)
-    post("/apps/#{app}/card.xml", {:card => card}).to_s
-  end
-  
-  def user_create(email)
-    post("/users.xml", {:user => {:username => @user, :password => @password, :email => email}}).to_s
-  end
-
-  def user_info
-    get("/users/#{@user}.xml").to_s
-  end
-
-  def user_update(updates)
-    put("/users/#{@user}.xml", {:user => updates}).to_s
-  end
-  
-  def reset_password(password)
-    put("/users/#{@user}/password/reset.xml", {:user =>{:password => password}}).to_s
-    @password = password
-  end
-  
-  def user_delete_card(card)
-    delete("/users/#{@user}/cards/#{card}.xml").to_s
-  end
-  
-  def user_list_cards 
-    get("/users/#{@user}/cards.xml").to_s
-  end
-  
-  def user_add_card(card)
-    post("/users/#{@user}/cards.xml", {:card => card}).to_s
+  def scale_down(app, qty=1)
+    doc = xml(put("/apps/#{app}/scale-down.xml").to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
   def on_warning(&blk)
@@ -198,7 +155,6 @@ class Pagoda::Client
       RestClient::Resource.new(uri, @user, @password)
     else
       RestClient::Resource.new("http://www.pagodabox.com#{uri}", @user, @password)
-      # RestClient::Resource.new("127.0.0.1:3000#{uri}", @user, @password)
     end
   end
 

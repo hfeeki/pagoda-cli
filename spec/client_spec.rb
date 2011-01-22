@@ -144,21 +144,36 @@ describe Pagoda::Client do
       stub_api_request(:put, "/apps/testapp/fast-forward.xml").to_return(:body => stub)
       @client.fast_forward('testapp', 1).should == {:id => '1', :name => 'app.traverse', :description => 'traverse the code', :state => 'started', :status => nil}
     end
-  
-    # it "should rollback code base" do
-    #   stub_api_request(:get, '/apps/testapp/rollback')
-    #   @client.rollback('testapp')
-    # end
-    #   
-    # it "should add a collaborator" do
-    #   stub_api_request(:post, '/apps/testapp/collaborators').with(:body => 'collaborator%5Bemail%5D=test%40test.com')
-    #   @client.add_collaborator('testapp', 'test@test.com')
-    # end
-    #   
-    # it "should remove a collaborator" do
-    #   stub_api_request(:delete, '/apps/testapp/collaborators/test%40test%2Ecom')
-    #   @client.remove_collaborator('testapp', 'test@test.com')
-    # end
+
+    it "scales up" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.scaleup</name>
+          <description>scaling app</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:put, "/apps/testapp/scale-up.xml").to_return(:body => stub)
+      @client.scale_up('testapp', 1).should == {:id => '1', :name => 'app.scaleup', :description => 'scaling app', :state => 'started', :status => nil}
+    end
+    
+    it "scales down" do
+      stub = %{
+        <?xml version='1.0' encoding='UTF-8'?>
+        <transaction>
+          <id>1</id>
+          <name>app.scaledown</name>
+          <description>scaling app</description>
+          <state>started</state>
+          <status></status>
+        </transaction>
+      }
+      stub_api_request(:put, "/apps/testapp/scale-down.xml").to_return(:body => stub)
+      @client.scale_down('testapp', 1).should == {:id => '1', :name => 'app.scaledown', :description => 'scaling app', :state => 'started', :status => nil}
+    end
     
   end
   

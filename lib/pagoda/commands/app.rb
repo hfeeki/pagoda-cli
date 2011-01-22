@@ -61,6 +61,20 @@ module Pagoda::Command
     alias :fastforward :fast_forward
     alias :forward :fast_forward
     alias :redo :fast_forward
+
+    def scale_up
+      transaction = client.scale_up(app)
+      display "--> scaling up...", false
+      loop_transaction(transaction)
+      display "--> app scaled"
+    end
+    
+    def scale_down
+      transaction = client.scale_down(app)
+      display "--> scaling down...", false
+      loop_transaction(transaction)
+      display "--> app scaled down"
+    end
     
     def destroy
       if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
