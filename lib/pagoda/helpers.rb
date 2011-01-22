@@ -45,15 +45,18 @@ module Pagoda
       exit 1
     end
     
-    def loop_transaction(transaction)
+    def loop_transaction(transaction, app_name=nil)
+      app_name ||= app
       finished = false
       until finished
         display ".", false
         sleep 1
         updated = client.transaction_status(app, transaction[:id])
         case updated[:state]
-        when /.*paused$/
-          # handle paused logic
+        when /.*aborted$/
+          display
+          display updated[:status]
+          exit
         when 'complete'
           display
           finished = true

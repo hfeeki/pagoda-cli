@@ -26,7 +26,7 @@ module Pagoda::Command
       display "--> registering #{name}"
       app = client.app_create(name, clone_url)
       display "--> deploying...", false
-      loop_transaction(app[:transactions][0][:id])
+      loop_transaction(app[:transactions][0][:id], name)
       add_app(name, clone_url)
       display "--> app created and deployed"
     end
