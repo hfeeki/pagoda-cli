@@ -16,7 +16,7 @@ module Pagoda
 
     def display(msg="", newline=true)
       if newline
-        puts("  #{msg}")
+        puts(msg)
       else
         print(msg)
         STDOUT.flush
@@ -29,7 +29,7 @@ module Pagoda
     end
 
     def ask(message=nil)
-      display "  #{message}", false if message
+      display message, false if message
       gets.strip
     end
     
@@ -51,7 +51,7 @@ module Pagoda
       until finished
         display ".", false
         sleep 1
-        updated = client.transaction_status(app, transaction[:id])
+        updated = client.transaction_status(app_name, transaction[:id])
         case updated[:state]
         when /.*aborted$/
           display
