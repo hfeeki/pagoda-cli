@@ -33,8 +33,23 @@ module Pagoda::Command
     end
     
     def info
+      display
       info = client.app_info(app)
-      puts info
+      display "  #{info[:name]} - info"
+      display "  //////////////////////////////////"
+      display "  name       :  #{info[:name]}"
+      display "  clone_url  :  #{info[:git_url]}"
+      display
+      display "  owner"
+      display "    username :  #{info[:owner][:username]}"
+      display "    email    :  #{info[:owner][:email]}"
+      display
+      display "  collaborators"
+      info[:collaborators].each do |collaborator|
+        display "    username :  #{collaborator[:username]}"
+        display "    email    :  #{collaborator[:email]}"
+      end
+      display
     end
     
     def deploy
