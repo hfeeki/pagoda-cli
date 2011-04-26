@@ -49,15 +49,6 @@ module Pagoda::Command
       end
     end
 
-    it "asks for login again when not authorized, for three times" do
-      @cli.stub!(:read_credentials)
-      @cli.stub!(:write_credentials)
-      @cli.stub!(:delete_credentials)
-      Pagoda::Command.stub!(:run_internal).with('keys:add', []).and_raise(RestClient::Unauthorized)
-      @cli.should_receive(:ask_for_credentials).exactly(4).times
-      lambda { @cli.save_credentials }.should raise_error(RestClient::Unauthorized)
-    end
-
     it "deletes the credentials file" do
       FileUtils.should_receive(:rm_f).with(@cli.credentials_file)
       @cli.delete_credentials
