@@ -11,7 +11,7 @@ module Pagoda::Command
           error "Please specify the app name and database instance (ie. pagoda tunnel:mysql --app=googliebear --instance=santana)"
           return
       end
-      Service::Tunnel.new("mysql", user, password, app, mysql_instance).start
+      Pagoda::Service::Tunnel.new("mysql", user, password, app, mysql_instance).start
     end
     
   protected
