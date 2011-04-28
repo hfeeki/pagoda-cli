@@ -22,6 +22,26 @@ module Pagoda
         STDOUT.flush
       end
     end
+    
+    
+    def option_value(short_hand = nil, long_hand = nil)
+      match = false
+      value = nil
+      
+      if short_hand
+        if args.include?(short_hand)
+          value = args[args.index(short_hand) + 1]
+          match = true
+        end
+      end
+      if long_hand && !match
+        if match = args.grep(/#{long_hand}=.*/).first
+          value = match.split("=").last
+        end
+      end
+      
+      value
+    end
 
     def format_date(date)
       date = Time.parse(date) if date.is_a?(String)

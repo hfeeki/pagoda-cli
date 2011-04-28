@@ -20,7 +20,7 @@ module Pagoda
       end
       
       def app
-        find_app
+        option_value("-a", "--app") || find_app
       end
       
       def find_app

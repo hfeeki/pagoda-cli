@@ -1,5 +1,6 @@
 require 'pagoda/helpers'
 require 'pagoda/commands/base'
+require 'pagoda/service/tunnel'
 
 Dir["#{File.dirname(__FILE__)}/commands/*.rb"].each { |c| require c }
 
