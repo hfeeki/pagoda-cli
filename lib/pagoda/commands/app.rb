@@ -45,7 +45,7 @@ module Pagoda::Command
       display "    email    :  #{info[:owner][:email]}"
       display
       display "  collaborators"
-      info[:collaborators].each do |collaborator|
+      info[:collaborators].each_with_index do |collaborator, index|
         display "    username :  #{collaborator[:username]}"
         display "    email    :  #{collaborator[:email]}"
       end
