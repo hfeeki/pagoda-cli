@@ -3,13 +3,9 @@ module Pagoda::Command
     
 
     def mysql
-      # unless @app && @instance
-      #   display "Please specify the app name and database instance (ie. pagoda tunnel:mysql --app=googliebear --instance=santana)"
-      #   return
-      # end
       unless app && mysql_instance && user && password
-          error "Please specify the app name and database instance (ie. pagoda tunnel:mysql --app=googliebear --instance=santana)"
-          return
+        error "Please specify the app name and database instance (ie. pagoda tunnel:mysql --app=googliebear --instance=santana)"
+        return
       end
       Pagoda::Service::Tunnel.new("mysql", user, password, app, mysql_instance).start
     end
