@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tyler Flint"]
-  s.date = %q{2011-01-04}
+  s.date = %q{2011-04-28}
   s.default_executable = %q{pagoda}
   s.description = %q{client for interacting with the pagodagrid}
   s.email = %q{tyler@pagodagrid.com}
@@ -30,29 +30,15 @@ Gem::Specification.new do |s|
     "lib/pagoda/commands/app.rb",
     "lib/pagoda/commands/auth.rb",
     "lib/pagoda/commands/base.rb",
-    "lib/pagoda/commands/tunnel.rb",
-    # "lib/pagoda/commands/collaborators.rb",
-    # "lib/pagoda/commands/credentials.rb",
-    # "lib/pagoda/commands/deploy.rb",
-    # "lib/pagoda/commands/directive.rb",
     "lib/pagoda/commands/help.rb",
-    # "lib/pagoda/commands/keys.rb",
-    # "lib/pagoda/commands/owner.rb",
-    # "lib/pagoda/commands/rewrite.rb",
-    # "lib/pagoda/commands/user.rb",
+    "lib/pagoda/commands/tunnel.rb",
     "lib/pagoda/helpers.rb",
+    "lib/pagoda/tunnel_proxy.rb",
     "lib/pagoda/version.rb",
     "spec/base.rb",
     "spec/client_spec.rb",
     "spec/command_spec.rb",
-    "spec/commands/app_spec.rb",
-    "spec/commands/auth_spec.rb",
-    "spec/commands/base_spec.rb"
-    # "spec/commands/collaborators_spec.rb",
-    # "spec/commands/deploy_spec.rb",
-    # "spec/commands/keys_spec.rb",
-    # "spec/commands/owner_spec.rb",
-    # "spec/commands/user_spec.rb"
+    "spec/commands/auth_spec.rb"
   ]
   s.homepage = %q{http://pagodagrid.com/}
   s.require_paths = ["lib"]
@@ -62,14 +48,7 @@ Gem::Specification.new do |s|
     "spec/base.rb",
     "spec/client_spec.rb",
     "spec/command_spec.rb",
-    "spec/commands/app_spec.rb",
-    "spec/commands/auth_spec.rb",
-    "spec/commands/base_spec.rb",
-    # "spec/commands/collaborators_spec.rb",
-    # "spec/commands/deploy_spec.rb",
-    # "spec/commands/keys_spec.rb",
-    # "spec/commands/owner_spec.rb",
-    # "spec/commands/user_spec.rb"
+    "spec/commands/auth_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -81,20 +60,29 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<webmock>, [">= 0"])
       s.add_runtime_dependency(%q<rest-client>, [">= 0"])
       s.add_runtime_dependency(%q<json_pure>, [">= 0"])
+      s.add_runtime_dependency(%q<iniparse>, [">= 0"])
       s.add_runtime_dependency(%q<crack>, [">= 0"])
+      s.add_runtime_dependency(%q<jeweler>, [">= 0"])
+      s.add_runtime_dependency(%q<em-proxy>, [">= 0"])
     else
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<webmock>, [">= 0"])
       s.add_dependency(%q<rest-client>, [">= 0"])
       s.add_dependency(%q<json_pure>, [">= 0"])
+      s.add_dependency(%q<iniparse>, [">= 0"])
       s.add_dependency(%q<crack>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
+      s.add_dependency(%q<em-proxy>, [">= 0"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<webmock>, [">= 0"])
     s.add_dependency(%q<rest-client>, [">= 0"])
     s.add_dependency(%q<json_pure>, [">= 0"])
+    s.add_dependency(%q<iniparse>, [">= 0"])
     s.add_dependency(%q<crack>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
+    s.add_dependency(%q<em-proxy>, [">= 0"])
   end
 end
 
