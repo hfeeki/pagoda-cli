@@ -1,6 +1,5 @@
 module Pagoda::Command
   class Tunnel < Auth
-    
 
     def mysql
       unless app && mysql_instance && user && password

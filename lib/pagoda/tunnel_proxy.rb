@@ -13,11 +13,8 @@ module Pagoda
     end
     
     def start
-      puts "HAY YO IT WORKED"
-      return
-
       upstream_port   = 3307
-      downstream_host = "127.0.0.1"
+      downstream_host = "www.pagodabox.com"
       downstream_port = 3306
 
       max_threads     = 5
