@@ -1,6 +1,8 @@
 require "socket"
 require 'openssl'  
 
+Signal.trap("INT") { puts "\nbye\n"; exit }
+
 module Pagoda
   class TunnelProxy
     

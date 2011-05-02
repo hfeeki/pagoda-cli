@@ -27,9 +27,8 @@ class Pagoda::Client
     doc = xml(get("/apps.xml").to_s)
     doc.elements['apps'].elements.to_a('//app/').inject([]) do |list, app| 
       list <<  {
-          :id => app.elements['id'].text,
           :name => app.elements['name'].text,
-          :git_url => app.elements['git-url'].text
+          :instances => app.elements['instances'].text
         }
     end
   end
