@@ -13,9 +13,9 @@ module Pagoda
     end
     
     def start
-      upstream_port   = 3307
-      downstream_host = "www.pagodabox.com"
-      downstream_port = 3306
+      local_port   = 3307
+      remote_host = "www.pagodabox.com"
+      remote_port = 3306
 
       max_threads     = 5
       threads         = []
@@ -23,8 +23,18 @@ module Pagoda
       chunk           = 4096
 
       #puts "start TCP server"
-      proxy_server = TCPServer.new(nil, upstream_port)
-
+      bound = false
+      until bound
+        begin
+          proxy_server = TCPServer.new(nil, local_port)
+          bound = true
+        rescue Errno::EADDRINUSE
+          local_port += 1
+        end
+      end
+      
+      puts "connection on localhost:#{local_port}"
+      
       loop do
 
         #puts "start a new thread for every client connection"
@@ -33,13 +43,11 @@ module Pagoda
           begin
             #puts "client connection"
             begin
-              puts "create ssl socket"
-              server_socket         = TCPSocket.new(downstream_host, downstream_port)
+              server_socket         = TCPSocket.new(remote_host, remote_port)
               ssl_context           = OpenSSL::SSL::SSLContext.new()  
               ssl_socket            = OpenSSL::SSL::SSLSocket.new(server_socket, ssl_context)  
               ssl_socket.sync_close = true  
               ssl_socket.connect
-              puts "connect socket"
             rescue Errno::ECONNREFUSED
               #puts "connection refused"
               client_socket.close
@@ -83,16 +91,12 @@ module Pagoda
             end
 
           rescue StandardError => error
-            puts "#{Thread.current} got an exception: #{error.inspect}"
           end
-
-          puts "#{Thread.current} closing connection"
           client_socket.close rescue StandardError
           ssl_socket.close rescue StandardError
         end
 
         #puts "clean up the dead threads, and wait until we have available threads"
-        puts "#{threads.size} threads running...\n"
         threads = threads.select { |thread| thread.alive? ? true : (thread.join; false) }
         while threads.size >= max_threads
           sleep 1

@@ -34,6 +34,16 @@ class Pagoda::Client
     end
   end
   
+  def database_exists?(app, mysql_instance)
+    begin
+      response = get("/apps/#{app}/databases/#{mysql_instance}.xml")
+      true
+    rescue RestClient::ResourceNotFound => e
+      false
+    end
+    
+  end
+  
   def app_create(name, git_url)
     doc = xml(post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s)
     doc.elements.to_a('//app/*').inject({}) do |hash, element|
@@ -154,7 +164,7 @@ class Pagoda::Client
     if uri =~ /^https?/
       RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("http://www.pagodabox.com#{uri}", @user, @password)
+      RestClient::Resource.new("http://dashboard.pagodabox.com#{uri}", @user, @password)
     end
   end
 
