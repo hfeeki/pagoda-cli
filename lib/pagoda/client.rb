@@ -45,30 +45,31 @@ class Pagoda::Client
   end
   
   def app_create(name, git_url)
-    doc = xml(post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s)
-    doc.elements.to_a('//app/*').inject({}) do |hash, element|
-      case element.name
-        when "owner"
-          hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
-        when "collaborators"
-          hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
-            list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
-          end
-        when "transactions"
-          hash[:transactions] = element.elements.to_a('//transaction/').inject([]) do |list, transaction|
-            list << {
-                :id          => transaction.elements["id"].text,
-                :name        => transaction.elements["name"].text,
-                :description => transaction.elements["description"].text,
-                :state       => transaction.elements["state"].text,
-                :status      => transaction.elements["status"].text
-              }
-          end
-        else
-          hash[element.name.gsub(/-/, '_').to_sym] = element.text
-      end
-      hash
-    end
+    post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s
+    # doc = xml(post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s)
+    # doc.elements.to_a('//app/*').inject({}) do |hash, element|
+    #   case element.name
+    #     when "owner"
+    #       hash[:owner] = {:username => element.elements['username'].text, :email => element.elements['email'].text}
+    #     when "collaborators"
+    #       hash[:collaborators] = element.elements.to_a('//collaborator/').inject([]) do |list, collaborator|
+    #         list << {:username => collaborator.elements['username'].text, :email => collaborator.elements['email'].text}
+    #       end
+    #     when "transactions"
+    #       hash[:transactions] = element.elements.to_a('//transaction/').inject([]) do |list, transaction|
+    #         list << {
+    #             :id          => transaction.elements["id"].text,
+    #             :name        => transaction.elements["name"].text,
+    #             :description => transaction.elements["description"].text,
+    #             :state       => transaction.elements["state"].text,
+    #             :status      => transaction.elements["status"].text
+    #           }
+    #       end
+    #     else
+    #       hash[element.name.gsub(/-/, '_').to_sym] = element.text
+    #   end
+    #   hash
+    # end
   end
   
   def app_info(app)
@@ -164,7 +165,8 @@ class Pagoda::Client
     if uri =~ /^https?/
       RestClient::Resource.new(uri, @user, @password)
     else
-      RestClient::Resource.new("http://dashboard.pagodabox.com#{uri}", @user, @password)
+      # RestClient::Resource.new("http://127.0.0.1:3000#{uri}", @user, @password)
+      RestClient::Resource.new("https://dashboard.pagodabox.com#{uri}", @user, @password)
     end
   end
 
