@@ -17,7 +17,39 @@ module Pagoda::Command
       display
     end
     
-    def create      
+    def sync
+      display
+      display "attempting to sync your folder with your application"
+      display
+      apps = client.app_list
+      my_repo = extract_git_clone_url
+      matching_apps = []
+      apps.each do |app|
+        if app[:git_url] == my_repo
+          matching_apps.push app
+        end
+      end
+      if matching_apps.count > 1
+        display "You have more then one application that uses this repo"
+        display "which app would you like to attach:"
+        number = 0
+        matching_apps.each do |app|
+          number += 1
+          display "#{number}: #{app[:name]}"
+        end
+        input = ask "App number: "
+        input = input.to_i - 1
+        app = matching_apps[input]
+        add_or_do_nothing app
+      elsif matching_apps.count == 1
+        app = matching_apps.first
+        add_or_do_nothing app
+      else
+        display "you have no applications using this repo"
+      end
+    end
+    
+    def create
       display
       clone_url = extract_git_clone_url
       name = ask "Please specify a name for this application, or hit enter to use '#{extract_possible_name}' : "
@@ -110,6 +142,27 @@ module Pagoda::Command
       end
       display
     end
+    
+    protected
+    
+    def add_or_do_nothing(app)
+      my_app_list = read_apps
+      current_root = locate_app_root
+      in_list = false
+      my_app_list.each do |app_str|
+        app_arr = app_str.split(" ")
+        if app[:git_url] == app_arr[1] && app[:name] == app_arr[0] || app_arr[2] == current_root
+          display "This clone is already in use by #{app_arr[0]}."
+          display "try modifying ~/.pagoda/apps"
+          in_list = true
+        end
+      end
+      unless in_list
+        puts "Application added"
+        add_app app[:name]
+      end
+    end
+    
     
   end
 end

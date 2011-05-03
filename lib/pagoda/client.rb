@@ -28,7 +28,8 @@ class Pagoda::Client
     doc.elements['apps'].elements.to_a('//app/').inject([]) do |list, app| 
       list <<  {
           :name => app.elements['name'].text,
-          :instances => app.elements['instances'].text
+          :instances => app.elements['instances'].text,
+          :git_url => app.elements['git-url'].text
         }
     end
   end
