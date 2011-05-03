@@ -9,6 +9,14 @@ describe Pagoda::Client do
   
   describe "app" do
     
+    # errors come back like this:
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <errors>
+    #  <error>Username can't be blank</error>
+    #  <error>Email can't be blank</error>
+    #  <error>Password can't be blank</error>
+    # </errors>
+    
     it "should display information" do
       stub = %{
         <?xml version='1.0' encoding='UTF-8'?>
