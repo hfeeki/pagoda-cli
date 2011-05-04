@@ -1,10 +1,4 @@
-source :gemcutter
+source "http://rubygems.org"
 
-gem 'rspec'
-gem 'webmock'
-gem 'rest-client'
-gem 'json_pure'
-gem 'iniparse'
-gem 'crack'
-gem 'jeweler'
-gem 'em-proxy'
+# Specify your gem's dependencies in pagoda.gemspec
+gemspec

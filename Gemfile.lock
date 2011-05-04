@@ -1,31 +1,31 @@
+PATH
+  remote: .
+  specs:
+    pagoda (0.0.1)
+      crack
+      iniparse
+      json_pure
+      rest-client
+
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.2.2)
+    addressable (2.2.5)
     crack (0.1.8)
     diff-lcs (1.1.2)
-    em-proxy (0.1.5)
-      eventmachine
-    eventmachine (0.12.10)
-    git (1.2.5)
     iniparse (1.1.4)
-    jeweler (1.5.2)
-      bundler (~> 1.0.0)
-      git (>= 1.2.5)
-      rake
-    json_pure (1.4.6)
+    json_pure (1.5.1)
     mime-types (1.16)
-    rake (0.8.7)
     rest-client (1.6.1)
       mime-types (>= 1.16)
-    rspec (2.4.0)
-      rspec-core (~> 2.4.0)
-      rspec-expectations (~> 2.4.0)
-      rspec-mocks (~> 2.4.0)
-    rspec-core (2.4.0)
-    rspec-expectations (2.4.0)
+    rspec (2.5.0)
+      rspec-core (~> 2.5.0)
+      rspec-expectations (~> 2.5.0)
+      rspec-mocks (~> 2.5.0)
+    rspec-core (2.5.1)
+    rspec-expectations (2.5.0)
       diff-lcs (~> 1.1.2)
-    rspec-mocks (2.4.0)
+    rspec-mocks (2.5.0)
     webmock (1.6.2)
       addressable (>= 2.2.2)
       crack (>= 0.1.7)
@@ -34,11 +34,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  crack
-  em-proxy
-  iniparse
-  jeweler
-  json_pure
-  rest-client
+  pagoda!
   rspec
   webmock
