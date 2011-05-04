@@ -34,6 +34,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  crack
+  iniparse
+  json_pure
   pagoda!
+  rest-client
   rspec
   webmock

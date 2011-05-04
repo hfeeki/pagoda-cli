@@ -17,6 +17,53 @@ module Pagoda::Command
       display
     end
     
+    def create
+      display
+      clone_url = extract_git_clone_url
+      name = ask "Please specify a name for this application, or hit enter to use '#{extract_possible_name}' : "
+      name.chomp!
+      name = extract_possible_name if name.empty?
+      display "  +> Registering #{name}"
+      # app = client.app_create(name, clone_url)
+      display client.app_create(name, clone_url)
+      exit
+      display "  +> Deploying...", false
+      loop_transaction(app[:transactions][0], name)
+      add_app(name, clone_url)
+      display "  +> #{name} created and deployed"
+      display
+    end
+    
+    def destroy
+      display
+      if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
+        client.app_destroy(app)
+        display "#{app} has been successfully destroyed."
+        remove_app(app)
+      end
+      display
+    end
+    
+    def info
+      display
+      info = client.app_info(app)
+      display "  #{info[:name]} - info"
+      display "  //////////////////////////////////"
+      display "  name       :  #{info[:name]}"
+      display "  clone_url  :  #{info[:git_url]}"
+      display
+      display "  owner"
+      display "    username :  #{info[:owner][:username]}"
+      display "    email    :  #{info[:owner][:email]}"
+      display
+      display "  collaborators"
+      info[:collaborators].each_with_index do |collaborator, index|
+        display "    username :  #{collaborator[:username]}"
+        display "    email    :  #{collaborator[:email]}"
+      end
+      display
+    end
+    
     def sync
       display
       display "attempting to sync your folder with your application"
@@ -47,43 +94,6 @@ module Pagoda::Command
       else
         display "you have no applications using this repo"
       end
-    end
-    
-    def create
-      display
-      clone_url = extract_git_clone_url
-      name = ask "Please specify a name for this application, or hit enter to use '#{extract_possible_name}' : "
-      name.chomp!
-      name = extract_possible_name if name.empty?
-      display "  +> Registering #{name}"
-      # app = client.app_create(name, clone_url)
-      display client.app_create(name, clone_url)
-      exit
-      display "  +> Deploying...", false
-      loop_transaction(app[:transactions][0], name)
-      add_app(name, clone_url)
-      display "  +> #{name} created and deployed"
-      display
-    end
-    
-    def info
-      display
-      info = client.app_info(app)
-      display "  #{info[:name]} - info"
-      display "  //////////////////////////////////"
-      display "  name       :  #{info[:name]}"
-      display "  clone_url  :  #{info[:git_url]}"
-      display
-      display "  owner"
-      display "    username :  #{info[:owner][:username]}"
-      display "    email    :  #{info[:owner][:email]}"
-      display
-      display "  collaborators"
-      info[:collaborators].each_with_index do |collaborator, index|
-        display "    username :  #{collaborator[:username]}"
-        display "    email    :  #{collaborator[:email]}"
-      end
-      display
     end
     
     def deploy
@@ -118,33 +128,6 @@ module Pagoda::Command
     alias :forward :fast_forward
     alias :redo :fast_forward
 
-    def scale_up
-      display
-      transaction = client.scale_up(app)
-      display "  +> scaling up...", false
-      loop_transaction(transaction)
-      display "  +> done"
-      display
-    end
-    
-    def scale_down
-      transaction = client.scale_down(app)
-      display "  +> scaling down...", false
-      loop_transaction(transaction)
-      display "  +> done"
-      display
-    end
-    
-    def destroy
-      display
-      if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
-        client.app_destroy(app)
-        display "#{app} has been successfully destroyed."
-        remove_app(app)
-      end
-      display
-    end
-    
     protected
     
     def add_or_do_nothing(app)
