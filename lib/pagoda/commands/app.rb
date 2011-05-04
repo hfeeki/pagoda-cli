@@ -99,11 +99,17 @@ module Pagoda::Command
     
     def deploy
       display
-      transaction = client.deploy(app)
-      display "  +> deploying...", false
-      loop_transaction
-      display "  +> deployed"
-      display
+      branch = parse_branch
+      commit = parse_commit
+      if branch && commit
+        client.deploy(app, branch, commit)
+        display "  +> deploying...", false
+        loop_transaction
+        display "  +> deployed"
+        display
+      else
+        option_value(nil, "--latest")
+      end
     end
     
     def rewind

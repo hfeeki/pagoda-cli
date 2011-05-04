@@ -23,11 +23,11 @@ module Pagoda
         option_value("-a", "--app") || find_app
       end
       
-      def branch
+      def parse_branch
         option_value("-b", "--branch") || find_branch
       end
       
-      def commit
+      def parse_commit
         option_value("-c", "--commit") || find_commit
       end
       
@@ -40,12 +40,20 @@ module Pagoda
       end
 
       def find_branch
-         line = File.new("#{locate_app_root}/.git/HEAD").gets
-         line.strip.split(' ').last.split("/").last
+        begin
+          line = File.new("#{locate_app_root}/.git/HEAD").gets
+          line.strip.split(' ').last.split("/").last
+        rescue
+          nil
+        end
       end
       
       def find_commit
-        File.new("#{locate_app_root}/.git/refs/heads/#{branch}").gets.strip
+        begin
+          File.new("#{locate_app_root}/.git/refs/heads/#{parse_branch}").gets.strip
+        rescue 
+          nil
+        end
       end
       
       def read_apps

@@ -35,8 +35,12 @@ module Pagoda
         end
       end
       if long_hand && !match
-        if match = args.grep(/#{long_hand}=.*/).first
-          value = match.split("=").last
+        if match = args.grep(/#{long_hand}.*/).first
+          if match.include? "="
+            value = match.split("=").last
+          else
+            value = true
+          end
         end
       end
       
