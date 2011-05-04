@@ -74,7 +74,7 @@ module Pagoda
       until finished
         display ".", false
         sleep 1
-        if client.app_info(app_name)[:transactions].count < 1
+        if client.app_info(app)[:transactions].count < 1
           finished = true
           display
         end
