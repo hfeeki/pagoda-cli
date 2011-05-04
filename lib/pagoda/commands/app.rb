@@ -87,7 +87,7 @@ module Pagoda::Command
         input = ask "App number: "
         input = input.to_i - 1
         app = matching_apps[input]
-        add_or_do_nothing app
+        add_sync_data_or_do_nothing app
       elsif matching_apps.count == 1
         app = matching_apps.first
         add_or_do_nothing app
@@ -130,7 +130,7 @@ module Pagoda::Command
 
     protected
     
-    def add_or_do_nothing(app)
+    def add_sync_data_or_do_nothing(app)
       my_app_list = read_apps
       current_root = locate_app_root
       in_list = false
