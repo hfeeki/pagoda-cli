@@ -71,14 +71,7 @@ module Pagoda
       until finished
         display ".", false
         sleep 1
-        updated = client.transaction_status(app_name, transaction[:id])
-        case updated[:state]
-        when /.*aborted$/
-          display
-          display updated[:status]
-          exit
-        when 'complete'
-          display
+        if client.app_info(app)[:transactions].count < 1
           finished = true
         end
       end
