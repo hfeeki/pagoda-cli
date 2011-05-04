@@ -24,15 +24,16 @@ module Pagoda::Command
       name.chomp!
       name = extract_possible_name if name.empty?
       display "  +> Registering #{name}"
-      # app = client.app_create(name, clone_url)
-      display client.app_create(name, clone_url)
-      exit
+      app = client.app_create(name, clone_url)
+      # display client.app_create(name, clone_url)
+      # exit
       display "  +> Deploying...", false
       loop_transaction(app[:transactions][0], name)
       add_app(name, clone_url)
       display "  +> #{name} created and deployed"
       display
     end
+    alias :launch :create
     
     def destroy
       display
