@@ -138,10 +138,20 @@ class Pagoda::Client
     get("/apps/#{app}/rollback.xml").to_s
   end
   
-  def deploy(app)
-    doc = xml(put("/apps/#{app}/deploy.xml").to_s)
+  def deploy_latest(app)
+    doc = xml(post("/apps/#{app}/deploy.xml").to_s)
     doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
+  
+  def deploy(app, branch, commit)
+    doc = xml(post("/apps/#{app}/deploy.xml", {:deploy => {:branch => branch, :commit => commit}}).to_s)
+    doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
+  end
+  
+  # def deploy(app)
+  #   doc = xml(put("/apps/#{app}/deploy.xml").to_s)
+  #   doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
+  # end
   
   def scale_up(app, qty=1)
     doc = xml(put("/apps/#{app}/scale-up.xml").to_s)

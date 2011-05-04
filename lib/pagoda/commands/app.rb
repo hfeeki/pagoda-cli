@@ -26,7 +26,7 @@ module Pagoda::Command
       display "  +> Registering #{name}"
       app = client.app_create(name, clone_url)
       display "  +> Deploying...", false
-      loop_transaction(app[:transactions][0], name)
+      loop_transaction
       add_app(name, clone_url)
       display "  +> #{name} created and deployed"
       display
@@ -97,18 +97,24 @@ module Pagoda::Command
     
     def deploy
       display
-      transaction = client.deploy(app)
-      display "  +> deploying...", false
-      loop_transaction(transaction)
-      display "  +> deployed"
-      display
+      branch = parse_branch
+      commit = parse_commit
+      if branch && commit
+        client.deploy(app, branch, commit)
+        display "  +> deploying...", false
+        loop_transaction
+        display "  +> deployed"
+        display
+      else
+        option_value(nil, "--latest")
+      end
     end
     
     def rewind
       display
       transaction = client.rewind(app)
       display "  +> undo...", false
-      loop_transaction(transaction)
+      loop_transaction
       display "  +> done"
       display
     end
@@ -119,7 +125,7 @@ module Pagoda::Command
       display
       transaction = client.fast_forward(app)
       display "  +> redo...", false
-      loop_transaction(transaction)
+      loop_transaction
       display "  +> done"
       display
     end
