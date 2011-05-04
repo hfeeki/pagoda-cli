@@ -28,7 +28,7 @@ module Pagoda::Command
       display client.app_create(name, clone_url)
       exit
       display "  +> Deploying...", false
-      loop_transaction(app[:transactions][0], name)
+      loop_transaction
       add_app(name, clone_url)
       display "  +> #{name} created and deployed"
       display
@@ -100,7 +100,7 @@ module Pagoda::Command
       display
       transaction = client.deploy(app)
       display "  +> deploying...", false
-      loop_transaction(transaction)
+      loop_transaction
       display "  +> deployed"
       display
     end
@@ -109,7 +109,7 @@ module Pagoda::Command
       display
       transaction = client.rewind(app)
       display "  +> undo...", false
-      loop_transaction(transaction)
+      loop_transaction
       display "  +> done"
       display
     end
@@ -120,7 +120,7 @@ module Pagoda::Command
       display
       transaction = client.fast_forward(app)
       display "  +> redo...", false
-      loop_transaction(transaction)
+      loop_transaction
       display "  +> done"
       display
     end

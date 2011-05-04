@@ -65,8 +65,7 @@ module Pagoda
       exit 1
     end
     
-    def loop_transaction(transaction, app_name=nil)
-      app_name ||= app
+    def loop_transaction
       finished = false
       until finished
         display ".", false
