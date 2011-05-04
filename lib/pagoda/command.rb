@@ -30,7 +30,7 @@ module Pagoda
           error extract_not_found(e.http_body)
         rescue RestClient::RequestFailed => e
           # puts e
-          error extract_error(e.http_body) unless e.http_code == 402
+          error extract_error(e.http_body) unless e.http_code == 402 || e.http_code == 102
         rescue RestClient::RequestTimeout
           error "API request timed out. Please try again, or contact support@pagodagrid.com if this issue persists."
         rescue CommandFailed => e
