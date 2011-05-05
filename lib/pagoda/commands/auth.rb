@@ -14,7 +14,7 @@ module Pagoda::Command
 
     # just a stub; will raise if not authenticated
     def check
-      client.list
+      client.app_list
     end
 
     def reauthorize
@@ -92,8 +92,7 @@ module Pagoda::Command
     def save_credentials
       begin
         write_credentials
-        # command = args.any? { |a| a == '--ignore-keys' } ? 'auth:check' : 'keys:add'
-        # Pagoda::Command.run_internal(command, args)
+        Pagoda::Command.run_internal('auth:check', args)
       rescue RestClient::Unauthorized => e
         delete_credentials
         raise e unless retry_login?
