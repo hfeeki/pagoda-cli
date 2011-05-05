@@ -20,9 +20,11 @@ module Pagoda::Command
     def create
       display
       clone_url = extract_git_clone_url
-      name = ask "Please specify a name for this application, or hit enter to use '#{extract_possible_name}' : "
-      name.chomp!
-      name = extract_possible_name if name.empty?
+      unless name = app
+        unless name = args.dup.shift
+          error "Please Specify an app name ie. pagoda create awesomeapp"
+        end
+      end
       display "  +> Registering #{name}"
       app = client.app_create(name, clone_url)
       # display client.app_create(name, clone_url)
