@@ -83,6 +83,7 @@ module Pagoda::Command
     end
 
     def save_credentials
+      puts "saving credentials"
       begin
         write_credentials
         # command = args.any? { |a| a == '--ignore-keys' } ? 'auth:check' : 'keys:add'
@@ -96,6 +97,7 @@ module Pagoda::Command
         @client = init_client
         retry
       rescue Exception => e
+        puts "write credentials failed: #{e}"
         delete_credentials
         raise e
       end
@@ -108,6 +110,7 @@ module Pagoda::Command
     end
 
     def write_credentials
+      puts "writing credentials"
       FileUtils.mkdir_p(File.dirname(credentials_file))
       File.open(credentials_file, 'w') do |file|
         file.puts self.credentials
@@ -116,11 +119,13 @@ module Pagoda::Command
     end
 
     def set_credentials_permissions
+      puts "setting credential permissions"
       FileUtils.chmod 0700, File.dirname(credentials_file)
       FileUtils.chmod 0600, credentials_file
     end
 
     def delete_credentials
+      puts "deleting credentials"
       FileUtils.rm_f(credentials_file)
     end
   end

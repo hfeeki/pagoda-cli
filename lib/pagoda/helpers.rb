@@ -7,10 +7,12 @@ module Pagoda
     end
 
     def running_on_windows?
+      puts "running on windows"
       RUBY_PLATFORM =~ /mswin32|mingw32/
     end
 
     def running_on_a_mac?
+      puts "running on mac"
       RUBY_PLATFORM =~ /-darwin\d/
     end
 
