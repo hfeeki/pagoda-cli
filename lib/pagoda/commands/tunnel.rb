@@ -10,6 +10,7 @@ module Pagoda::Command
       if client.database_exists?(app, mysql_instance)
         display "starting tunnel"
         display "Username and password can be found in your dashboard panel."
+        display "ctrl-c to close tunnel."
         Pagoda::TunnelProxy.new("mysql", user, password, app, mysql_instance).start
       else
           error "invalid information:\neither the database or the app does not exist." 
