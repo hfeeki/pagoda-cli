@@ -58,16 +58,21 @@ module Pagoda::Command
     end
 
     def ask_for_credentials
-      username = ask "Username: "
-      password = running_on_windows? ? ask_for_password_on_windows : (ask "Password: ")
+      unless username = option_value("-u", "--username=")
+        username = ask "Username: "
+      end
+      password = running_on_windows? ? ask_for_password_on_windows : (option_value("-p", "--password=") || (ask "Password: ") )
       [username, password] # return
     end
 
     def ask_for_password_on_windows
       require "Win32API"
       
-      char      = nil
-      password  = ask "Password: "
+      char     = nil
+      password = nil
+      unless password = option_value("-p", "--password=")
+        password      = ask "Password: "
+      end
 
       while char = Win32API.new("crtdll", "_getch", [ ], "L").Call do
         break if char == 10 || char == 13 # received carriage return or newline

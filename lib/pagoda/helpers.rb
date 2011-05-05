@@ -58,6 +58,7 @@ module Pagoda
     end
     
     def confirm(message="Are you sure you wish to continue? (y/n)?")
+      return true if args.include? "-f"
       display("#{message} ", false)
       ask.downcase == 'y'
     end
@@ -69,12 +70,12 @@ module Pagoda
       exit 1
     end
     
-    def loop_transaction
+    def loop_transaction(app_name = nil)
       finished = false
       until finished
         display ".", false
         sleep 1
-        if client.app_info(app)[:transactions].count < 1
+        if client.app_info(app_name || app)[:transactions].count < 1
           finished = true
           display
         end

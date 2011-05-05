@@ -28,7 +28,7 @@ module Pagoda::Command
       display "  +> Registering #{name}"
       app = client.app_create(name, clone_url)
       display "  +> Deploying...", false
-      loop_transaction
+      loop_transaction(name)
       add_app(name, clone_url)
       display "  +> #{name} created and deployed"
       display
@@ -44,6 +44,7 @@ module Pagoda::Command
       end
       display
     end
+    alias :delete :destroy
     
     def info
       display
@@ -78,22 +79,22 @@ module Pagoda::Command
         end
       end
       if matching_apps.count > 1
-        display "You have more then one application that uses this repo"
-        display "which app would you like to attach:"
-        number = 0
-        matching_apps.each do |app|
-          number += 1
-          display "#{number}: #{app[:name]}"
+        unless name = app
+          unless name = args.dup.shift
+            display "You have more then one application that uses this repo"
+            error "Please Specify an app name ie. pagoda sync #{matching_apps[0][:name]}"
+          end
         end
-        input = ask "App number: "
-        input = input.to_i - 1
-        app = matching_apps[input]
-        add_sync_data_or_do_nothing app
+        assign_app = nil
+        matching_apps.each do |app|
+          assign_app = app if app[:name] == name
+        end
+        add_sync_data_or_do_nothing assign_app
       elsif matching_apps.count == 1
         app = matching_apps.first
-        add_or_do_nothing app
+        add_sync_data_or_do_nothing app
       else
-        display "you have no applications using this repo"
+        error "you have no applications using this repo"
       end
     end
     

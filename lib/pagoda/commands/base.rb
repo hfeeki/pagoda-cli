@@ -118,6 +118,10 @@ module Pagoda
           end
         end
       end
+      
+      def version
+        display Client.gem_version_string
+      end
 
       def locate_app_root(dir=Dir.pwd)
         return dir if File.exists? "#{dir}/.git/config"
