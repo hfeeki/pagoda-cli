@@ -84,7 +84,7 @@ module Pagoda::Command
           (password << char.chr) rescue RangeError
         end
       end
-      
+      puts "finished weirdo loop"
       return password
     end
 
