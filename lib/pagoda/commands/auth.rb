@@ -59,7 +59,7 @@ module Pagoda::Command
 
     def ask_for_credentials
       username = ask "Username: "
-      display "Password: "
+      display "Password: ", false
       password = running_on_windows? ? ask_for_password_on_windows : ask_for_password
       [username, password] # return
     end
