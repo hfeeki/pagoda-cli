@@ -59,7 +59,8 @@ module Pagoda::Command
 
     def ask_for_credentials
       username = ask "Username: "
-      password = running_on_windows? ? ask_for_password_on_windows : (ask "Password: ")
+      display "Password: "
+      password = running_on_windows? ? ask_for_password_on_windows : ask
       [username, password] # return
     end
 
@@ -68,11 +69,8 @@ module Pagoda::Command
       puts "requiring Win32API"
       
       require "Win32API"
-      
-      char      = nil
-      password  = ask "Password: "
-      
-      puts "got password: #{password}"
+      char = nil
+      password = ''
       
       puts "doing a while weirdo loop"
       while char = Win32API.new("crtdll", "_getch", [ ], "L").Call do
