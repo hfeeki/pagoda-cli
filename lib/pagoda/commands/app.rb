@@ -1,3 +1,5 @@
+# use this: https://gist.github.com/958004
+
 module Pagoda::Command
   class App < Base
     
