@@ -43,7 +43,7 @@ module Pagoda
         threads << Thread.new(proxy_server.accept) do |client_socket|
 
           begin
-            #puts "client connection"
+            puts "client connection"
             begin
               server_socket         = TCPSocket.new(remote_host, remote_port)
               ssl_context           = OpenSSL::SSL::SSLContext.new()  
@@ -51,29 +51,29 @@ module Pagoda
               ssl_socket.sync_close = true  
               ssl_socket.connect
             rescue Errno::ECONNREFUSED
-              #puts "connection refused"
+              puts "connection refused"
               client_socket.close
               raise
             end
 
-            #puts "authenticte"
+            puts "authenticate"
             if ssl_socket.readpartial(chunk) == "auth"
-              #puts "authentication"
+              puts "authentication"
               ssl_socket.write "auth=#{@user}:#{@pass}:#{@app}:#{@instance}" 
               if ssl_socket.readpartial(chunk) == "success"
-                #puts "successful connection"
+                puts "successful connection"
               else
-                #puts "failed connection"
+                puts "failed connection"
               end
             else
-              #puts "danger will robbinson! abort!"
+              puts "danger will robbinson! abort!"
             end
 
             loop do
-              #puts "wait for data on either socket"
+              puts "wait for data on either socket"
               (ready_sockets, dummy, dummy) = IO.select([client_socket, ssl_socket])
 
-              #puts "full duplex connection until data stream ends"
+              puts "full duplex connection until data stream ends"
               begin
                 ready_sockets.each do |socket|
                   data = socket.readpartial(chunk)
