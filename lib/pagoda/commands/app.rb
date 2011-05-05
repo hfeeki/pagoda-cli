@@ -3,16 +3,16 @@ module Pagoda::Command
     
     def list
       display
-      display "=== apps ==="
-      display
       apps = client.app_list
       if !apps.empty?
+        display "=== apps ==="
+        display
         apps.each do |app|
           display app[:name]
         end
       else
         display "looks like you don't have any apps yet"
-        display "type 'pagoda create' to start"
+        display "type 'pagoda launch' to start"
       end
       display
     end

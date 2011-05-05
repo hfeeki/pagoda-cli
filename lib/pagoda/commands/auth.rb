@@ -14,7 +14,7 @@ module Pagoda::Command
 
     # just a stub; will raise if not authenticated
     def check
-      client.list
+      client.app_list
     end
 
     def reauthorize
@@ -58,22 +58,29 @@ module Pagoda::Command
     end
 
     def ask_for_credentials
-      unless username = option_value("-u", "--username=")
+      unless username = option_value("-u", "--username")
         username = ask "Username: "
       end
-      password = running_on_windows? ? ask_for_password_on_windows : (option_value("-p", "--password=") || (ask "Password: ") )
+      unless password = option_value("-p", "--password")
+        display "Password: ", false
+        password = running_on_windows? ? ask_for_password_on_windows : ask_for_password
+      end
       [username, password] # return
+    end
+
+    def ask_for_password
+      echo_off
+      password = ask
+      puts
+      echo_on
+      return password
     end
 
     def ask_for_password_on_windows
       require "Win32API"
+      char = nil
+      password = ''
       
-      char     = nil
-      password = nil
-      unless password = option_value("-p", "--password=")
-        password      = ask "Password: "
-      end
-
       while char = Win32API.new("crtdll", "_getch", [ ], "L").Call do
         break if char == 10 || char == 13 # received carriage return or newline
         if char == 127 || char == 8 # backspace and delete
@@ -83,15 +90,13 @@ module Pagoda::Command
           (password << char.chr) rescue RangeError
         end
       end
-      
       return password
     end
 
     def save_credentials
       begin
         write_credentials
-        # command = args.any? { |a| a == '--ignore-keys' } ? 'auth:check' : 'keys:add'
-        # Pagoda::Command.run_internal(command, args)
+        Pagoda::Command.run_internal('auth:check', args)
       rescue RestClient::Unauthorized => e
         delete_credentials
         raise e unless retry_login?
