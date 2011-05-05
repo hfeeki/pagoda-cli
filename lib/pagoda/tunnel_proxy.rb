@@ -28,7 +28,7 @@ module Pagoda
       bound = false
       until bound
         begin
-          proxy_server = TCPServer.new(nil, local_port)
+          proxy_server = TCPServer.new('0.0.0.0', local_port)
           bound = true
         rescue Errno::EADDRINUSE
           local_port += 1
