@@ -101,7 +101,7 @@ module Pagoda::Command
         delete_credentials
         raise e unless retry_login?
 
-        display "\nAuthentication failed"
+        error "Authentication failed"
         @credentials = ask_for_credentials
         @client = init_client
         retry

@@ -56,8 +56,7 @@ module Pagoda
     end
 
     def ask(message=nil, level=1)
-      indent = build_indent(level)
-      display "#{indent}#{message}", false if message
+      display("#{message}", false, level) if message
       gets.strip
     end
     
@@ -68,12 +67,20 @@ module Pagoda
       ask.downcase == 'y'
     end
 
-    def error(msg, level=1)
+    def error(msg, exit=true, level=1)
       indent = build_indent(level)
       STDERR.puts
-      STDERR.puts("#{indent}** Error: #{msg}")
+      case msg
+      when Array
+        STDERR.puts("#{indent}** Error:")
+        msg.each do |m|
+          STDERR.puts("#{indent}** #{m}")
+        end
+      when String
+        STDERR.puts("#{indent}** Error: #{msg}")
+      end
       STDERR.puts
-      exit 1
+      exit 1 if exit
     end
     
     def loop_transaction(app_name = nil)

@@ -2,17 +2,17 @@ module Pagoda::Command
   class App < Base
     
     def list
-      display
       apps = client.app_list
       if !apps.empty?
-        display "=== apps ==="
+        display
+        display "APPS"
+        display "//////////////////////////////////"
         display
         apps.each do |app|
-          display app[:name]
+          display "- #{app[:name]}"
         end
       else
-        display "looks like you don't have any apps yet"
-        display "type 'pagoda launch' to start"
+        error ["looks like you haven't launched any apps", "type 'pagoda launch' to launch this project"]
       end
       display
     end
@@ -22,7 +22,7 @@ module Pagoda::Command
       clone_url = extract_git_clone_url
       unless name = app
         unless name = args.dup.shift
-          error "Please Specify an app name ie. pagoda create awesomeapp"
+          error "Please Specify an app name ie. 'pagoda launch awesomeapp'"
         end
       end
       display "+> Registering #{name}"
@@ -34,6 +34,7 @@ module Pagoda::Command
       display
     end
     alias :launch :create
+    alias :register :create
     
     def destroy
       display
@@ -49,26 +50,30 @@ module Pagoda::Command
     def info
       display
       info = client.app_info(app)
-      display "#{info[:name]} - info"
+      display "INFO - #{info[:name]}"
       display "//////////////////////////////////"
       display "name       :  #{info[:name]}"
       display "clone_url  :  #{info[:git_url]}"
       display  
       display "owner"
-      display "  username :  #{info[:owner][:username]}"
-      display "  email    :  #{info[:owner][:email]}"
+      display "username :  #{info[:owner][:username]}", true, 2
+      display "email    :  #{info[:owner][:email]}", true, 2
       display  
       display "collaborators"
-      info[:collaborators].each_with_index do |collaborator, index|
-        display "  username :  #{collaborator[:username]}"
-        display "  email    :  #{collaborator[:email]}"
+      if info[:collaborators].any?
+        info[:collaborators].each_with_index do |collaborator, index|
+          display "username :  #{collaborator[:username]}", true, 2
+          display "email    :  #{collaborator[:email]}", true, 2
+        end
+      else
+        display "(none)", true, 2
       end
       display
     end
     
-    def sync
+    def pair
       display
-      display "attempting to sync your folder with your application"
+      display "+> Locating deployed app with matching git repo"
       display
       apps = client.app_list
       my_repo = extract_git_clone_url
@@ -79,22 +84,38 @@ module Pagoda::Command
         end
       end
       if matching_apps.count > 1
-        unless name = app
-          unless name = args.dup.shift
-            display "You have more then one application that uses this repo"
-            error "Please Specify an app name ie. pagoda sync #{matching_apps[0][:name]}"
+        if name = app || args.dup.shift
+          assign_app = nil
+          matching_apps.each do |app|
+            assign_app = app if app[:name] == name
           end
+          if assign_app
+            display "+> Attempting to pair your repo with deployed app - #{assign_app[:name]}"
+            pair_with_remote(assign_app)
+            display "+> Repo is now paired with '#{assign_app[:name]}'"
+          else
+            error "#{name} is not found among your launched app list"
+          end
+        else
+          errors << "Multiple matches found"
+          errors << ""
+          matching_apps.each do |match|
+            errors << "-> #{match[:name]}"
+          end
+          errors << ""
+          errors << "You have more then one app that uses this repo."
+          errors << "Please specify which app you would like to use."
+          errors << ""
+          errors << "ex: pagoda pair #{matching_apps[0][:name]}"
+          error errors
         end
-        assign_app = nil
-        matching_apps.each do |app|
-          assign_app = app if app[:name] == name
-        end
-        add_sync_data_or_do_nothing assign_app
       elsif matching_apps.count == 1
         app = matching_apps.first
-        add_sync_data_or_do_nothing app
+        display "+> Attempting to pair your repo with deployed app - #{app}"
+        pair_with_remote app
+        display "+> Repo is now paired with '#{app}'"
       else
-        error "you have no applications using this repo"
+        error "Current git repo doesn't match any launched app repos"
       end
     end
     
@@ -142,7 +163,7 @@ module Pagoda::Command
 
     protected
     
-    def add_sync_data_or_do_nothing(app)
+    def pair_with_remote(app)
       my_app_list = read_apps
       current_root = locate_app_root
       in_list = false

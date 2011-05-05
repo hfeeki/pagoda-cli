@@ -114,7 +114,7 @@ module Pagoda
           if soft
             return false
           else
-            error "It appears you are using git (fantastic). However we only support git repos hosted with github. \r\n          Please ensure your repo is hosted with github, and that the origin is set to that url."
+            error ["It appears you are using git (fantastic). However we only support git repos hosted with github.", "Please ensure your repo is hosted with github, and that the origin is set to that url."]
           end
         end
       end
