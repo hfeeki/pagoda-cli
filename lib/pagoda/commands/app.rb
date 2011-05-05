@@ -25,12 +25,12 @@ module Pagoda::Command
           error "Please Specify an app name ie. pagoda create awesomeapp"
         end
       end
-      display "  +> Registering #{name}"
+      display "+> Registering #{name}"
       app = client.app_create(name, clone_url)
-      display "  +> Deploying...", false
+      display "+> Deploying...", false
       loop_transaction(name)
       add_app(name, clone_url)
-      display "  +> #{name} created and deployed"
+      display "+> #{name} created and deployed"
       display
     end
     alias :launch :create
@@ -49,19 +49,19 @@ module Pagoda::Command
     def info
       display
       info = client.app_info(app)
-      display "  #{info[:name]} - info"
-      display "  //////////////////////////////////"
-      display "  name       :  #{info[:name]}"
-      display "  clone_url  :  #{info[:git_url]}"
-      display
-      display "  owner"
-      display "    username :  #{info[:owner][:username]}"
-      display "    email    :  #{info[:owner][:email]}"
-      display
-      display "  collaborators"
+      display "#{info[:name]} - info"
+      display "//////////////////////////////////"
+      display "name       :  #{info[:name]}"
+      display "clone_url  :  #{info[:git_url]}"
+      display  
+      display "owner"
+      display "  username :  #{info[:owner][:username]}"
+      display "  email    :  #{info[:owner][:email]}"
+      display  
+      display "collaborators"
       info[:collaborators].each_with_index do |collaborator, index|
-        display "    username :  #{collaborator[:username]}"
-        display "    email    :  #{collaborator[:email]}"
+        display "  username :  #{collaborator[:username]}"
+        display "  email    :  #{collaborator[:email]}"
       end
       display
     end
@@ -104,15 +104,15 @@ module Pagoda::Command
       commit = parse_commit
       if option_value(nil, "--latest")
         client.deploy_latest(app)
-        display "  +> deploying...", false
+        display "+> deploying...", false
         loop_transaction
-        display "  +> deployed"
+        display "+> deployed"
         display
       else
         client.deploy(app, branch, commit)
-        display "  +> deploying...", false
+        display "+> deploying...", false
         loop_transaction
-        display "  +> deployed"
+        display "+> deployed"
         display
       end
     end
@@ -120,9 +120,9 @@ module Pagoda::Command
     def rewind
       display
       transaction = client.rewind(app)
-      display "  +> undo...", false
+      display "+> undo...", false
       loop_transaction
-      display "  +> done"
+      display "+> done"
       display
     end
     alias :rollback :rewind
@@ -131,9 +131,9 @@ module Pagoda::Command
     def fast_forward
       display
       transaction = client.fast_forward(app)
-      display "  +> redo...", false
+      display "+> redo...", false
       loop_transaction
-      display "  +> done"
+      display "+> done"
       display
     end
     alias :fastforward :fast_forward
@@ -155,7 +155,7 @@ module Pagoda::Command
         end
       end
       unless in_list
-        puts "Application added"
+        display "Application added"
         add_app app[:name]
       end
     end

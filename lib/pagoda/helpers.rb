@@ -2,6 +2,8 @@ require 'crack'
 
 module Pagoda
   module Helpers
+    INDENT = "  "
+    
     def home_directory
       running_on_windows? ? ENV['USERPROFILE'] : ENV['HOME']
     end
@@ -14,11 +16,12 @@ module Pagoda
       RUBY_PLATFORM =~ /-darwin\d/
     end
 
-    def display(msg="", newline=true)
+    def display(msg="", newline=true, level=1)
+      indent = build_indent(level)
       if newline
-        puts(msg)
+        puts("#{indent}#{msg}")
       else
-        print(msg)
+        print("#{indent}#{msg}")
         STDOUT.flush
       end
     end
@@ -52,20 +55,23 @@ module Pagoda
       date.strftime("%Y-%m-%d %H:%M %Z")
     end
 
-    def ask(message=nil)
-      display message, false if message
+    def ask(message=nil, level=1)
+      indent = build_indent(level)
+      display "#{indent}#{message}", false if message
       gets.strip
     end
     
-    def confirm(message="Are you sure you wish to continue? (y/n)?")
+    def confirm(message="Are you sure you wish to continue? (y/n)?", level=1)
       return true if args.include? "-f"
-      display("#{message} ", false)
+      indent = build_indent(level)
+      display("#{indent}#{message} ", false)
       ask.downcase == 'y'
     end
 
-    def error(msg)
+    def error(msg, level=1)
+      indent = build_indent(level)
       STDERR.puts
-      STDERR.puts("** Error: #{msg}")
+      STDERR.puts("#{indent}** Error: #{msg}")
       STDERR.puts
       exit 1
     end
@@ -80,6 +86,14 @@ module Pagoda
           display
         end
       end
+    end
+    
+    def build_indent(level=1)
+      indent = ""
+      level.times do
+        indent += INDENT
+      end
+      indent
     end
     
   end
