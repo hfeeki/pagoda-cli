@@ -64,11 +64,17 @@ module Pagoda::Command
     end
 
     def ask_for_password_on_windows
+      puts "asking for password on windows"
+      puts "requiring Win32API"
+      
       require "Win32API"
       
       char      = nil
       password  = ask "Password: "
-
+      
+      puts "got password: #{password}"
+      
+      puts "doing a while weirdo loop"
       while char = Win32API.new("crtdll", "_getch", [ ], "L").Call do
         break if char == 10 || char == 13 # received carriage return or newline
         if char == 127 || char == 8 # backspace and delete
