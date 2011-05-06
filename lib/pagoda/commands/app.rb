@@ -48,8 +48,9 @@ module Pagoda::Command
       add_app(name, clone_url)
       display "+> #{name} launched"
       
-      # make sure it deploys to point where this project is at
-      Pagoda::Command.run_internal("app:deploy", args)
+      unless option_value(nil, "--latest")
+        Pagoda::Command.run_internal("app:deploy", args)
+      end
       
       display "-----------------------------------------------"
       display
