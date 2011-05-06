@@ -100,6 +100,7 @@ module Pagoda::Command
             display "+> Pairing this repo with deployed app - #{assign_app[:name]}"
             pair_with_remote(assign_app)
             display "+> Repo is now paired with '#{assign_app[:name]}'"
+            display
           else
             error "#{name} is not found among your launched app list"
           end
@@ -122,13 +123,18 @@ module Pagoda::Command
         display "+> Pairing this repo with deployed app - #{app}"
         pair_with_remote app
         display "+> Repo is now paired with '#{app}'"
+        display
       else
         error "Current git repo doesn't match any launched app repos"
       end
     end
     
     def unpair
-      
+      display
+      display "+> Unpairing this repo"
+      remove_app(app)
+      display "+> Free at last!"
+      display
     end
     
     def deploy
