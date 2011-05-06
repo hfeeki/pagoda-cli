@@ -63,7 +63,7 @@ module Pagoda::Command
       if confirm ["Are you totally completely sure you want to delete #{app} forever and ever?", "THIS CANNOT BE UNDONE! (y/n)"]
         display "+> Destroying #{app}"
         client.app_destroy(app)
-        display "#{app} has been successfully destroyed. RIP #{app}."
+        display "+> #{app} has been successfully destroyed. RIP #{app}."
         remove_app(app)
       end
       display
