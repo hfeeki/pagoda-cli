@@ -20,7 +20,9 @@ module Pagoda
       end
       
       def app
-        option_value("-a", "--app") || find_app
+        unless name = option_value("-a", "--app") || find_app
+          error ""
+        end
       end
       
       def parse_branch

@@ -2,6 +2,12 @@ module Pagoda::Command
   class Auth < Base
     attr_accessor :credentials
 
+    def initialize(args)
+      @args = args
+      check_for_credentials
+    end
+
+
     def client
       @client ||= init_client
     end
@@ -17,6 +23,12 @@ module Pagoda::Command
       client.app_list
     end
 
+    def check_for_credentials
+      if option_value("-u", "--username") && option_value("-p", "--password")
+        reauthorize
+      end
+    end
+    
     def reauthorize
       @credentials = ask_for_credentials
       write_credentials

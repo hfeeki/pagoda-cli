@@ -26,7 +26,6 @@ module Pagoda
       end
     end
     
-    
     def option_value(short_hand = nil, long_hand = nil)
       match = false
       value = nil
@@ -86,7 +85,7 @@ module Pagoda
     def loop_transaction(app_name = nil)
       finished = false
       until finished
-        display ".", false
+        display ".", false, 0
         sleep 1
         if client.app_info(app_name || app)[:transactions].count < 1
           finished = true
