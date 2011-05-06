@@ -126,6 +126,5 @@ module Pagoda
         end
       end
     end
-  
   end
 end
