@@ -163,6 +163,11 @@ class Pagoda::Client
     doc.elements.to_a('//transaction/*').inject({}) { |hash, element| hash[element.name.gsub(/-/, '_').to_sym] = element.text; hash }
   end
   
+  def app_databases(app)
+    doc = xml(get("/apps/#{app}/databases.xml").to_s)
+    doc.elements['databases'].elements.to_a('//database/').inject([]) {|list, instance| list <<  {:name => instance.elements['name'].text} }
+  end
+  
   def on_warning(&blk)
     @warning_callback = blk
   end

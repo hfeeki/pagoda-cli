@@ -19,9 +19,44 @@ module Pagoda
         FileUtils.cd(Dir.pwd) {|d| return `#{cmd}`}
       end
       
-      def app
-        unless name = option_value("-a", "--app") || find_app
-          error "Pagoda doesnt know about your app and you didnt specify an app name"
+      def app(soft_fail=false)
+        if override = option_value("-a", "--app")
+          return override
+        else
+          if name = find_app
+            return name
+          else
+            if locate_app_root
+              if extract_git_clone_url
+                return false if soft_fail
+                errors = []
+                errors << "This repo is either not launched, or not paired with a launched app"
+                errors << ""
+                errors << "To launch this app run 'pagoda launch <app-name>'"
+                errors << ""
+                errors << "To pair this project with a deployed app, run 'pagoda pair <app-name>'"
+                errors << ""
+                errors << "To see a list of currently deployed apps, run 'pagoda list'"
+                error errors
+              else
+                return false if soft_fail
+                errors = []
+                errors << "It appears you are using git (fantastic)."
+                errors << "However we only support git repos hosted with github."
+                errors << "Please ensure your repo is hosted with github."
+                errors << ""
+                errors << "If you are trying to reference a specific app, try argument: -a <app-name>"
+                error errors
+              end
+            else
+              return false if soft_fail
+              errors = []
+              errors << "Unable to find git config in this directory or in any parent directory"
+              errors << ""
+              errors << "If you are trying to reference a specific app, try argument: -a <app-name>"
+              error errors
+            end
+          end
         end
         name
       end
@@ -114,11 +149,7 @@ module Pagoda
           raise unless url.match(/^git@github.com:.+\.git$/)
           url
         rescue Exception => e
-          if soft
-            return false
-          else
-            error ["It appears you are using git (fantastic). However we only support git repos hosted with github.", "Please ensure your repo is hosted with github, and that the origin is set to that url."]
-          end
+          return false
         end
       end
       
@@ -129,7 +160,7 @@ module Pagoda
       def locate_app_root(dir=Dir.pwd)
         return dir if File.exists? "#{dir}/.git/config"
         parent = dir.split('/')[0..-2].join('/')
-        error "Unable to find git config in this directory or in any parent directory" if parent.empty?
+        return false if parent.empty?
         locate_app_root(parent)
       end
 

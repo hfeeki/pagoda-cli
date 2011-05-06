@@ -20,10 +20,26 @@ module Pagoda::Command
     end
     
     def create
-      clone_url = extract_git_clone_url
+      if app_name = app(true)
+        error ["This project is already launched and paired to #{app_name}.", "To unpair run 'pagoda unpair'"]
+      end
+      
+      unless locate_app_root
+        error ["Unable to find git config in this directory or in any parent directory"]
+      end
+      
+      unless clone_url = extract_git_clone_url
+        errors = []
+        errors << "It appears you are using git (fantastic)."
+        errors << "However we only support git repos hosted with github."
+        errors << "Please ensure your repo is hosted with github."
+        error errors
+      end
+      
       unless name = args.dup.shift
         error "Please Specify an app name ie. 'pagoda launch awesomeapp'"
       end
+      
       display
       display "+> Registering #{name}"
       app = client.app_create(name, clone_url)
@@ -38,9 +54,10 @@ module Pagoda::Command
     
     def destroy
       display
-      if confirm "Are you sure you want to remove #{app}? This cannot be undone! (y/n)"
+      if confirm ["Are you totally completely sure you want to delete #{app} forever and ever?", "THIS CANNOT BE UNDONE! (y/n)"]
+        display "+> Destroying #{app}"
         client.app_destroy(app)
-        display "#{app} has been successfully destroyed."
+        display "#{app} has been successfully destroyed. RIP #{app}."
         remove_app(app)
       end
       display
@@ -72,32 +89,45 @@ module Pagoda::Command
     end
     
     def pair
-      # call app once so that we throw an error 
-      # before we display any information
-      app
+      
+      if app_name = app(true)
+        error ["This project is paired to #{app_name}.", "To unpair run 'pagoda unpair'"]
+      end
+      
+      unless locate_app_root
+        error ["Unable to find git config in this directory or in any parent directory"]
+      end
+      
+      unless my_repo = extract_git_clone_url
+        errors = []
+        errors << "It appears you are using git (fantastic)."
+        errors << "However we only support git repos hosted with github."
+        errors << "Please ensure your repo is hosted with github."
+        error errors
+      end
       
       display
       display "+> Locating deployed app with matching git repo"
       
       apps = client.app_list
-      my_repo = extract_git_clone_url
+      
       matching_apps = []
-      apps.each do |app|
-        if app[:git_url] == my_repo
-          matching_apps.push app
+      apps.each do |a|
+        if a[:git_url] == my_repo
+          matching_apps.push a
         end
       end
       
       if matching_apps.count > 1
-        if name = app || args.dup.shift
+        if name = app(true) || args.dup.shift
           assign_app = nil
-          matching_apps.each do |app|
-            assign_app = app if app[:name] == name
+          matching_apps.each do |a|
+            assign_app = a if a[:name] == name
           end
           if assign_app
-            display "+> Pairing this repo with deployed app - #{assign_app[:name]}"
+            display "+> Pairing this repo to deployed app - #{assign_app[:name]}"
             pair_with_remote(assign_app)
-            display "+> Repo is now paired with '#{assign_app[:name]}'"
+            display "+> Repo is now paired to '#{assign_app[:name]}'"
             display
           else
             error "#{name} is not found among your launched app list"
@@ -111,16 +141,16 @@ module Pagoda::Command
           end
           errors << ""
           errors << "You have more then one app that uses this repo."
-          errors << "Please specify which app you would like to use."
+          errors << "Please specify which app you would like to pair to."
           errors << ""
           errors << "ex: pagoda pair #{matching_apps[0][:name]}"
           error errors
         end
       elsif matching_apps.count == 1
-        app = matching_apps.first
-        display "+> Pairing this repo with deployed app - #{app}"
-        pair_with_remote app
-        display "+> Repo is now paired with '#{app}'"
+        match = matching_apps.first
+        display "+> Pairing this repo to deployed app - #{match}"
+        pair_with_remote match
+        display "+> Repo is now paired to '#{match}'"
         display
       else
         error "Current git repo doesn't match any launched app repos"
@@ -128,6 +158,7 @@ module Pagoda::Command
     end
     
     def unpair
+      app
       display
       display "+> Unpairing this repo"
       remove_app(app)
@@ -136,6 +167,7 @@ module Pagoda::Command
     end
     
     def deploy
+      app
       display
       branch = parse_branch
       commit = parse_commit
@@ -155,6 +187,7 @@ module Pagoda::Command
     end
     
     def rewind
+      app
       display
       transaction = client.rewind(app)
       display "+> undo...", false
@@ -166,6 +199,7 @@ module Pagoda::Command
     alias :undo :rewind
     
     def fast_forward
+      app
       display
       transaction = client.fast_forward(app)
       display "+> redo...", false
@@ -186,7 +220,6 @@ module Pagoda::Command
       my_app_list.each do |app_str|
         app_arr = app_str.split(" ")
         if app[:git_url] == app_arr[1] && app[:name] == app_arr[0] || app_arr[2] == current_root
-          error ["This project is paired to #{app_arr[0]}.", "To unpair run 'pagoda unpair"]
           in_list = true
         end
       end
