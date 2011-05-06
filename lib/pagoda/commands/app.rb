@@ -74,9 +74,14 @@ module Pagoda::Command
     end
     
     def pair
+      # call app once so that we throw an error 
+      # before we display any information
+      app
+      
       display
       display "+> Locating deployed app with matching git repo"
       display
+      
       apps = client.app_list
       my_repo = extract_git_clone_url
       matching_apps = []
@@ -85,6 +90,7 @@ module Pagoda::Command
           matching_apps.push app
         end
       end
+      
       if matching_apps.count > 1
         if name = app || args.dup.shift
           assign_app = nil
@@ -92,7 +98,7 @@ module Pagoda::Command
             assign_app = app if app[:name] == name
           end
           if assign_app
-            display "+> Attempting to pair your repo with deployed app - #{assign_app[:name]}"
+            display "+> Pairing this repo with deployed app - #{assign_app[:name]}"
             pair_with_remote(assign_app)
             display "+> Repo is now paired with '#{assign_app[:name]}'"
           else
@@ -113,7 +119,7 @@ module Pagoda::Command
         end
       elsif matching_apps.count == 1
         app = matching_apps.first
-        display "+> Attempting to pair your repo with deployed app - #{app}"
+        display "+> Pairing this repo with deployed app - #{app}"
         pair_with_remote app
         display "+> Repo is now paired with '#{app}'"
       else
