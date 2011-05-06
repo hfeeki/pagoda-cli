@@ -43,7 +43,7 @@ module Pagoda
                 errors = []
                 errors << "It appears you are using git (fantastic)."
                 errors << "However we only support git repos hosted with github."
-                errors << "Please ensure your repo is hosted with github, and that the origin is set to that url."
+                errors << "Please ensure your repo is hosted with github."
                 errors << ""
                 errors << "If you are trying to reference a specific app, try argument: -a <app-name>"
                 error errors

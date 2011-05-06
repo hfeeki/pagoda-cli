@@ -61,8 +61,21 @@ module Pagoda
     
     def confirm(message="Are you sure you wish to continue? (y/n)?", level=1)
       return true if args.include? "-f"
-      indent = build_indent(level)
-      display("#{indent}#{message} ", false)
+      case message
+      when Array
+        count = message.length
+        iteration = 0
+        message.each do |m|
+          if iteration == count - 1
+            display("#{m} ", false, level)
+          else
+            display("#{m} ", true, level)
+          end
+          iteration += 1
+        end
+      when String
+        display("#{message} ", false, level)
+      end
       ask.downcase == 'y'
     end
 
