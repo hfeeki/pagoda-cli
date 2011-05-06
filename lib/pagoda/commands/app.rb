@@ -48,11 +48,16 @@ module Pagoda::Command
       add_app(name, clone_url)
       display "+> #{name} launched"
       
-      if option_value(nil, "--current")
-        Pagoda::Command.run_internal("app:deploy", args)
-      else
-        display
-      end
+      # make sure it deploys to point where this project is at
+      Pagoda::Command.run_internal("app:deploy", args)
+      
+      display "-----------------------------------------------"
+      display
+      display "LIVE URL    : http://#{name}.pagodabox.com"
+      display "ADMIN PANEL : http://dashboard.pagodabox.com"
+      display
+      display "-----------------------------------------------"
+      display
       
     end
     alias :launch :create
