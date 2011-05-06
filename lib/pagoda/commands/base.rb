@@ -19,7 +19,7 @@ module Pagoda
         FileUtils.cd(Dir.pwd) {|d| return `#{cmd}`}
       end
       
-      def app(soft=false)
+      def app(soft_fail=false)
         if override = option_value("-a", "--app")
           return override
         else
@@ -28,19 +28,33 @@ module Pagoda
           else
             if locate_app_root
               if extract_git_clone_url
-                return false if soft
-                error "Unable to determine app, please try again."
+                return false if soft_fail
+                errors = []
+                errors << "This repo is either not launched, or not paired with a launched app"
+                errors << ""
+                errors << "To launch this app run 'pagoda launch <app-name>'"
+                errors << ""
+                errors << "To pair this project with a deployed app, run 'pagoda pair <app-name>'"
+                errors << ""
+                errors << "To see a list of currently deployed apps, run 'pagoda list'"
+                error errors
               else
-                return false if soft
+                return false if soft_fail
                 errors = []
                 errors << "It appears you are using git (fantastic)."
                 errors << "However we only support git repos hosted with github."
                 errors << "Please ensure your repo is hosted with github, and that the origin is set to that url."
+                errors << ""
+                errors << "If you are trying to reference a specific app, try argument: -a <app-name>"
                 error errors
               end
             else
-              return false if soft
-              error "Unable to find git config in this directory or in any parent directory"
+              return false if soft_fail
+              errors = []
+              errors << "Unable to find git config in this directory or in any parent directory"
+              errors << ""
+              errors << "If you are trying to reference a specific app, try argument: -a <app-name>"
+              error errors
             end
           end
         end
