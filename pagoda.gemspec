@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = Pagoda::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["lyon hill"]
-  s.email       = ["lyon@pagodabox.com"]
+  s.email       = ["hal@pagodabox.com"]
   s.homepage    = "http://www.pagodabox.com/"
   s.summary     = %q{Terminal client for interacting with the pagodabox}
   s.description = %q{Terminal client for interacting with the pagodabox. This client does not contain full api functionality, just functionality that will enhance the workflow experience.}
