@@ -20,13 +20,11 @@ module Pagoda::Command
     end
     
     def create
-      display
       clone_url = extract_git_clone_url
-      unless name = app
-        unless name = args.dup.shift
-          error "Please Specify an app name ie. 'pagoda launch awesomeapp'"
-        end
+      unless name = args.dup.shift
+        error "Please Specify an app name ie. 'pagoda launch awesomeapp'"
       end
+      display
       display "+> Registering #{name}"
       app = client.app_create(name, clone_url)
       display "+> Deploying...", false

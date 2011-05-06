@@ -21,8 +21,9 @@ module Pagoda
       
       def app
         unless name = option_value("-a", "--app") || find_app
-          error ""
+          error "Pagoda doesnt know about your app and you didnt specify an app name"
         end
+        name
       end
       
       def parse_branch
