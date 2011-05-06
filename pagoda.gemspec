@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["lyon hill"]
   s.email       = ["lyon@pagodabox.com"]
   s.homepage    = "http://www.pagodabox.com/"
-  s.summary     = %q{client for interacting with the pagodabox}
-  s.description = %q{client for interacting with the pagodabox}
+  s.summary     = %q{Terminal client for interacting with the pagodabox}
+  s.description = %q{Terminal client for interacting with the pagodabox. This client does not contain full api functionality, just functionality that will enhance the workflow experience.}
 
   s.rubyforge_project = "pagoda"
   
