@@ -20,7 +20,6 @@ module Pagoda::Command
     end
     
     def create
-      
       if app_name = app(true)
         error ["This project is already launched and paired to #{app_name}.", "To unpair run 'pagoda unpair'"]
       end

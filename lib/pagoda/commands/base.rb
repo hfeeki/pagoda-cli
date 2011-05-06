@@ -58,6 +58,7 @@ module Pagoda
             end
           end
         end
+        name
       end
       
       def parse_branch
