@@ -80,7 +80,6 @@ module Pagoda::Command
       
       display
       display "+> Locating deployed app with matching git repo"
-      display
       
       apps = client.app_list
       my_repo = extract_git_clone_url
@@ -105,6 +104,7 @@ module Pagoda::Command
             error "#{name} is not found among your launched app list"
           end
         else
+          errors = []
           errors << "Multiple matches found"
           errors << ""
           matching_apps.each do |match|
@@ -125,6 +125,10 @@ module Pagoda::Command
       else
         error "Current git repo doesn't match any launched app repos"
       end
+    end
+    
+    def unpair
+      
     end
     
     def deploy
@@ -178,13 +182,11 @@ module Pagoda::Command
       my_app_list.each do |app_str|
         app_arr = app_str.split(" ")
         if app[:git_url] == app_arr[1] && app[:name] == app_arr[0] || app_arr[2] == current_root
-          display "This clone is already in use by #{app_arr[0]}."
-          display "try modifying ~/.pagoda/apps"
+          error ["This project is paired to #{app_arr[0]}.", "To unpair run 'pagoda unpair"]
           in_list = true
         end
       end
       unless in_list
-        display "Application added"
         add_app app[:name]
       end
     end
