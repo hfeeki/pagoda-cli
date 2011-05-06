@@ -185,13 +185,13 @@ module Pagoda::Command
       commit = parse_commit
       if option_value(nil, "--latest")
         client.deploy_latest(app)
-        display "+> deploying...", false
+        display "+> deploying to latest commit point on github...", false
         loop_transaction
         display "+> deployed"
         display
       else
         client.deploy(app, branch, commit)
-        display "+> deploying...", false
+        display "+> deploying to match current branch and commit...", false
         loop_transaction
         display "+> deployed"
         display
