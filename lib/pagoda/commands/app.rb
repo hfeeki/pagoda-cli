@@ -44,11 +44,17 @@ module Pagoda::Command
       display
       display "+> Registering #{name}"
       app = client.app_create(name, clone_url)
-      display "+> Deploying...", false
+      display "+> Launching...", false
       loop_transaction(name)
       add_app(name, clone_url)
-      display "+> #{name} created and deployed"
-      display
+      display "+> #{name} launched"
+      
+      if option_value(nil, "--current")
+        Pagoda::Command.run_internal("app:deploy", args)
+      else
+        display
+      end
+      
     end
     alias :launch :create
     alias :register :create
