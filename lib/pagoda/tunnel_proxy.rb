@@ -1,10 +1,9 @@
 require "socket"
 require 'openssl'  
 
-Signal.trap("INT") { puts "\nbye\n"; exit }
-
 module Pagoda
   class TunnelProxy
+    include Pagoda::Helpers
     
     def initialize(type, user, pass, app, instance)
       @type     = type
@@ -15,16 +14,27 @@ module Pagoda
     end
     
     def start
+      
+      [:INT, :TERM].each do |sig|
+        Signal.trap(sig) do
+          display "Tunnel Closed."
+          display "-----------------------------------------------"
+          display
+          exit
+        end
+      end
+      
       local_port   = 3307
       remote_host = "www.pagodabox.com"
       remote_port = 3306
 
-      max_threads     = 5
+      max_threads     = 20
       threads         = []
 
       chunk           = 4096
 
       #puts "start TCP server"
+      display "+> Opening Tunnel"
       bound = false
       until bound
         begin
@@ -35,7 +45,17 @@ module Pagoda
         end
       end
       
-      puts "connection on localhost:#{local_port}"
+      display
+      display "Tunnel Established!  Accepting connections on :"
+      display "-----------------------------------------------"
+      display
+      display "HOST : 127.0.0.1 (or localhost)", true, 2
+      display "PORT : #{local_port}", true, 2
+      display "USER : (found in pagodabox dashboard)", true, 2
+      display "PASS : (found in pagodabox dashboard)", true, 2
+      display
+      display "-----------------------------------------------"
+      display "(note : ctrl-c To close this tunnel)"
       
       loop do
 
