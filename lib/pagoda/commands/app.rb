@@ -158,9 +158,9 @@ module Pagoda::Command
         end
       elsif matching_apps.count == 1
         match = matching_apps.first
-        display "+> Pairing this repo to deployed app - #{match}"
+        display "+> Pairing this repo to deployed app - #{match[:name]}"
         pair_with_remote match
-        display "+> Repo is now paired to '#{match}'"
+        display "+> Repo is now paired to '#{match[:name]}'"
         display
       else
         error "Current git repo doesn't match any launched app repos"
