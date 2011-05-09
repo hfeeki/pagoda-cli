@@ -50,6 +50,10 @@ module Pagoda::Command
         Pagoda::Command.run_internal("app:deploy", args)
       end
       
+      if option_value(nil, "--with-mysql")
+        Pagoda::Command.run_internal("db:create", args)
+      end
+      
       display "-----------------------------------------------"
       display
       display "LIVE URL    : http://#{name}.pagodabox.com"

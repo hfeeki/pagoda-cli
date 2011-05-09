@@ -44,6 +44,10 @@ class Pagoda::Client
     
   end
   
+  def app_database_create(app)
+    response = post("/apps/#{app}/databases.xml", {:mysql_instance => {:ram => 10}})
+  end
+  
   def app_create(name, git_url)
     doc = xml(post("/apps.xml", {:app => {:name => name, :git_url => git_url}}).to_s)
     doc.elements.to_a('//app/*').inject({}) do |hash, element|
