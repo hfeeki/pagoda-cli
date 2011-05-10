@@ -1,5 +1,5 @@
 module Pagoda::Command
-  class Help < Base
+  class Db < Base
 
     def create
       app
