@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pagoda (0.0.1)
+    pagoda (0.2.0)
       crack
       iniparse
       json_pure
