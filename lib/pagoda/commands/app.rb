@@ -193,7 +193,7 @@ module Pagoda::Command
         display
       else
         client.deploy(app, branch, commit)
-        display "+> deploying to match current branch and commit...", false
+        display "+> deploying current branch and commit...", false
         loop_transaction
         display "+> deployed"
         display
