@@ -146,7 +146,7 @@ module Pagoda
       def extract_git_clone_url(soft=false)
         begin
           url = IniParse.parse( File.read("#{locate_app_root}/.git/config") )['remote "origin"']["url"]
-          raise unless url.match(/^git@github.com:.+\.git$/)
+          raise unless url.match(/^((git@github.com:)|(.*:)|((http|https):\/\/.*github.com\/)|(git:\/\/github.com\/))(.*)\/(.*).git$/i)
           url
         rescue Exception => e
           return false
