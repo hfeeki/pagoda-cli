@@ -19,9 +19,9 @@ module Pagoda
     def display(msg="", newline=true, level=1)
       indent = build_indent(level)
       if newline
-        puts("#{indent}#{msg}".green)
+        (running_on_windows?) ? puts("#{indent}#{msg}") : puts("#{indent}#{msg}".green)
       else
-        print("#{indent}#{msg}".green)
+        (running_on_windows?) ? print("#{indent}#{msg}") : print("#{indent}#{msg}".green)
         STDOUT.flush
       end
     end
@@ -59,7 +59,7 @@ module Pagoda
       gets.strip
     end
     
-    def confirm(message="Are you sure you wish to continue? (y/n)?".blue, level=1)
+    def confirm(message="Are you sure you wish to continue? (y/n)?", level=1)
       return true if args.include? "-f"
       case message
       when Array
@@ -67,14 +67,14 @@ module Pagoda
         iteration = 0
         message.each do |m|
           if iteration == count - 1
-            display("#{m} ".blue, false, level)
+            (running_on_windows?) ? display("#{m} ", false, level) : display("#{m} ".blue, false, level)
           else
-            display("#{m} ".blue, true, level)
+            (running_on_windows?) ? display("#{m} ", false, level) : display("#{m} ".blue, true, level)
           end
           iteration += 1
         end
       when String
-        display("#{message} ".blue, false, level)
+        (running_on_windows?) ? display("#{message} ", false, level) : display("#{message} ".blue, false, level)
       end
       ask.downcase == 'y'
     end
@@ -84,12 +84,12 @@ module Pagoda
       STDERR.puts
       case msg
       when Array
-        STDERR.puts("#{indent}** Error:".red)
+        (running_on_windows?) ? STDERR.puts("#{indent}** Error:") : STDERR.puts("#{indent}** Error:".red)
         msg.each do |m|
-          STDERR.puts("#{indent}** #{m}".red)
+          (running_on_windows?) ? STDERR.puts("#{indent}** #{m}") : STDERR.puts("#{indent}** #{m}".red)
         end
       when String
-        STDERR.puts("#{indent}** Error: #{msg}".red)
+        (running_on_windows?) ? STDERR.puts("#{indent}** Error:") : STDERR.puts("#{indent}** Error:".red)
       end
       STDERR.puts
       exit 1 if exit
