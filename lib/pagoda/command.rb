@@ -1,8 +1,11 @@
 require 'pagoda/helpers'
 require 'pagoda/tunnel_proxy'
 require 'pagoda/commands/base'
-
-Dir["#{File.dirname(__FILE__)}/commands/*.rb"].each { |c| require c }
+require 'pagoda/commands/auth'
+require 'pagoda/commands/app'
+require 'pagoda/commands/db'
+require 'pagoda/commands/help'
+require 'pagoda/commands/tunnel'
 
 module Pagoda
   module Command
