@@ -31,7 +31,7 @@ module Pagoda
       max_threads     = 20
       threads         = []
 
-      chunk           = 4096
+      chunk           = 4096*4096
 
       #puts "start TCP server"
       display "+> Opening Tunnel"
