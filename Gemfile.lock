@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pagoda (0.2.0)
+    pagoda (0.3.1)
       crack
       iniparse
       json_pure
@@ -14,9 +14,10 @@ GEM
     crack (0.1.8)
     diff-lcs (1.1.2)
     iniparse (1.1.4)
-    json_pure (1.5.1)
+    json_pure (1.5.4)
+      spruz (~> 0.2.8)
     mime-types (1.16)
-    rest-client (1.6.1)
+    rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.5.0)
       rspec-core (~> 2.5.0)
@@ -26,6 +27,7 @@ GEM
     rspec-expectations (2.5.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.5.0)
+    spruz (0.2.13)
     webmock (1.6.2)
       addressable (>= 2.2.2)
       crack (>= 0.1.7)
@@ -34,10 +36,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  crack
-  iniparse
-  json_pure
   pagoda!
-  rest-client
   rspec
   webmock
