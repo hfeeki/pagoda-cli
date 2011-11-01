@@ -86,14 +86,14 @@ on_error do |exception|
     Pagoda::Command::Base.error errors
   elsif exception.class == SystemExit or exception.class == Interrupt
   else
-    # errors = [
-    #   "The Client has had an unexpected error:",
-    #   " -- #{exception.message} -- ",
-    #   exception.backtrace.join("\n"),
-    #   "Please report this error to support@pagodabox.com so we can fix it.",
-    #   "Thank you."
-    # ]
-    # Pagoda::Command::Base.error errors
+    errors = [
+      "The Client has had an unexpected error:",
+      " -- #{exception.message} -- ",
+      exception.backtrace.join("\n"),
+      "Please report this error to support@pagodabox.com so we can fix it.",
+      "Thank you."
+    ]
+    Pagoda::Command::Base.error errors
   end
 
   # Error logic here
