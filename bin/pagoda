@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'rest_client'
 require 'gli'
 
 require 'pagoda/cli/version'
