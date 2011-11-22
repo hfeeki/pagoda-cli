@@ -15,12 +15,10 @@ module Pagoda::Command
           component = client.component_info(app, user_input)
         end
       rescue
-        errors = []
-        errors << "Input unrecoginized"
-        errors << "try 'pagoda -a <appname> tunnel <component>'"
-        errors << "ie. 'pagoda -a app tunnel db1'"
-        error errors
+        output_error
       end
+      output_error unless component
+      puts component
       if component[:tunnelable]
         type = component[:_type]
         component_id = component[:_id]
@@ -30,6 +28,14 @@ module Pagoda::Command
         error "Either the component is not tunnelable or you do not have access"
       end
 
+    end
+
+    def output_error
+      errors = []
+      errors << "Input unrecoginized"
+      errors << "try 'pagoda -a <appname> tunnel <component>'"
+      errors << "ie. 'pagoda -a app tunnel db1'"
+      error errors
     end
 
   end

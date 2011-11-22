@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  gem.name          = "newpagoda"
+  gem.name          = "pagoda"
   gem.require_paths = ["lib"]
   gem.version       = Pagoda::CLI::VERSION
 
@@ -20,6 +20,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "pagoda-client"
   gem.add_dependency "pagoda-tunnel"
-  gem.add_dependency "rest_client"
+  gem.add_dependency "rest-client"
   gem.add_dependency "gli"
 end
