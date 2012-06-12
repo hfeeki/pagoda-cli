@@ -31,7 +31,7 @@ module Pagoda::Command
 
       auth_hash = {user: user, pass: password, app: app}
       auth_hash['comps'] = comps unless comps == nil
-      message_block = ->(hash) { colorize hash[0]['message'] }
+      message_block = ->(hash) { colorize hash[0]['message'], hash[0]['name'] }
 
 
       client = SocketIO.connect("http://log.pagodabox.com:8080") do
@@ -73,12 +73,12 @@ module Pagoda::Command
       # end
     end
 
-    def colorize message
+    def colorize message, name
       @hash ||= {}
-      if color = @hash[message.split(' ')[0]]
+      if color = @hash[name]
         puts message.send(color)
       else
-        puts message.send(@hash[message.split(' ')[0]] = next_color)
+        puts message.send(@hash[name] = next_color)
         # retry  
       end
     end
