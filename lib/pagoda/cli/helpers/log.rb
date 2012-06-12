@@ -4,6 +4,14 @@ module Pagoda::Command
   class Log < Base
 
     COLORS = [
+      'light_black',
+      'light_red',
+      'light_green',
+      'light_yellow',
+      'light_blue',
+      'light_magenta',
+      'light_cyan',
+      'light_white',
       'white',
       'red',
       'yellow',
@@ -13,6 +21,14 @@ module Pagoda::Command
       'green'
       ]
 
+    'light_black',    => 10,
+    'light_red',      => 11,
+    'light_green',    => 12,
+    'light_yellow',   => 13,
+    'light_blue',     => 14,
+    'light_magenta',  => 15,
+    'light_cyan',     => 16,
+    'light_white',    => 17
     def run
       user_input = options[:component] || args.first
 
