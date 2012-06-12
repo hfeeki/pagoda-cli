@@ -60,9 +60,8 @@ module Pagoda::Command
             puts "#{hash['success'] ? 'successfully unsubscribed from' : 'failed to unsubscribe from' } #{hash['comp']}"
           end
 
-          on_event('log') do |hash|
-            colorize hash[0]['message']
-          end
+          block = ->(hash) { colorize hash[0]['message'] }
+          on_event('log', &block)
 
           on_disconnect { puts "Disconnected" }
 
