@@ -21,14 +21,6 @@ module Pagoda::Command
       'green'
       ]
 
-    'light_black',    => 10,
-    'light_red',      => 11,
-    'light_green',    => 12,
-    'light_yellow',   => 13,
-    'light_blue',     => 14,
-    'light_magenta',  => 15,
-    'light_cyan',     => 16,
-    'light_white',    => 17
     def run
       user_input = options[:component] || args.first
 
