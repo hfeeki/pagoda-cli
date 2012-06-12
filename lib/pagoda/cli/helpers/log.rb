@@ -34,7 +34,7 @@ module Pagoda::Command
 
       puts 'connecting'
       client = SocketIO.connect("http://log.pagodabox.com:8080") do
-  
+
         before_start do
           on_event('auth_challenge') do
             puts 'got auth_challenge event'
@@ -76,7 +76,9 @@ module Pagoda::Command
 
     def colorize message
       @hash |= {}
-      if color =  @hash[message.split(' ')[1]]
+      puts message
+      puts message.split(' ')[1]
+      if color = @hash[message.split(' ')[1]]
         puts message.send(color)
       else
         puts message.send(@hash[message.split(' ')[1]] = next_color)
