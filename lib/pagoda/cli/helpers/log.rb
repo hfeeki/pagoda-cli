@@ -32,11 +32,11 @@ module Pagoda::Command
       puts auth_hash
 
       puts 'connecting'
-      client = SocketIO.connect("http://log.pagodabox.com") do
+      client = SocketIO.connect("https://log.pagodabox.com") do
         before_start do
           on_event('auth_challenge') do
             puts 'got auth_challenge event'
-            emit('authenticate', auth_hash)
+            puts emit('authenticate', auth_hash)
           end
 
           on_event('authenticated') do
