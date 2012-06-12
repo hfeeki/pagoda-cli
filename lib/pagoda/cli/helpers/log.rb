@@ -28,11 +28,13 @@ module Pagoda::Command
 
       auth_hash = {user: user, pass: password, app: app}
       auth_hash['comps'] = comps unless comps == nil
+      block = ->(hash) { colorize hash[0]['message'] }
 
       puts auth_hash
 
       puts 'connecting'
       client = SocketIO.connect("http://log.pagodabox.com:8080") do
+  
         before_start do
           on_event('auth_challenge') do
             puts 'got auth_challenge event'
@@ -60,7 +62,6 @@ module Pagoda::Command
             puts "#{hash['success'] ? 'successfully unsubscribed from' : 'failed to unsubscribe from' } #{hash['comp']}"
           end
 
-          block = ->(hash) { colorize hash[0]['message'] }
           on_event('log', &block)
 
           on_disconnect { puts "Disconnected" }
