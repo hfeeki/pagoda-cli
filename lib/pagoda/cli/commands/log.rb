@@ -12,6 +12,6 @@ command :log do |c|
 
   c.action do |global_options,options,args|
     require 'pagoda/cli/helpers/log'
-    Pagoda::Command::App.new(global_options,options,args).run
+    Pagoda::Command::Log.new(global_options,options,args).run
   end
 end

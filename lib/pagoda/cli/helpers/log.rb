@@ -14,39 +14,54 @@ module Pagoda::Command
       ]
 
     def run
-      component_name = options[:component]
-      component = {}
-      if component_name
-        begin
-          if user_input =~ /^(web\d*)|(db\d*)|(cache\d*)|(worker\d*)$/
-            components = client.component_list(app)
-            components.delete_if {|x| x[:cuid] != user_input }
-            component = components[0]
-          else
-            component = client.component_info(app, user_input)
-          end
-        rescue
-          output_error
-        end
+      user_input = options[:component] || args.first
+
+      if user_input =~ /^(web\d*)|(db\d*)|(cache\d*)|(worker\d*)$/
+        comps = user_input
       else
-        component = client.app_info(app)
+        comps = nil
       end
-      output_error unless component
-      puts component
-      if component[:_id]
-        client = SocketIO.connect("log.pagodabox.com") do
-          before_start do
-            on_event("log.#{component[:id]}.live") {|msg| colorize msg}
-            on_disconnect {puts "Disconnected"}
+
+      auth_hash = {user: user, pass: password, app: app}
+      auth_hash['comps'] = comps unless comps == nil
+
+      client = SocketIO.connect("log.pagodabox.com") do
+        before_start do
+          on_event('auth_challenge') do
+            emit('authenticate', auth_hash)
           end
 
-          after_start do
-            emit("subscribe", [user, password, "log.#{component[:id]}.live"])
+          on_event('authenticated') do
+            puts "Successfully Authenticated"
           end
+
+          on_event('error') do |hash|
+            error hash['message']
+          end
+
+          on_event('subscribed') do |hash|
+            puts "#{hash['success'] ? 'successfully subscribed to' : 'failed to subscribe to' } #{hash['comp']}"
+          end
+
+          on_event('unsubscribed') do |hash|
+            puts "#{hash['success'] ? 'successfully unsubscribed from' : 'failed to unsubscribe from' } #{hash['comp']}"
+          end
+
+          on_event('log') do |hash|
+            puts hash['message']
+          end
+
+          on_disconnect { puts "Disconnected" }
+
         end
-      else
-        error "Something went wrong"
+
+        after_start do
+          emit("subscribe", [user, password, "log.#{component[:id]}.live"])
+        end
       end
+      # else
+      #   error "Something went wrong"
+      # end
     end
 
     def colorize message
