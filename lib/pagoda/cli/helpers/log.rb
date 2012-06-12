@@ -75,7 +75,7 @@ module Pagoda::Command
     end
 
     def colorize message
-      @hash |= {}
+      @hash ||= {}
       puts @hash
       puts message
       puts message.split(' ')[1]
