@@ -16,7 +16,7 @@ module Pagoda::Command
     def run
       puts 'in run'
       user_input = options[:component] || args.first
-      puts 'user input' + user_input
+      puts "user input #{user_input}"
 
       if user_input =~ /^(web\d*)|(db\d*)|(cache\d*)|(worker\d*)$/
         comps = user_input
@@ -24,7 +24,7 @@ module Pagoda::Command
         comps = nil
       end
 
-      puts 'comp'
+      puts "comp: #{comps}"
 
       auth_hash = {user: user, pass: password, app: app}
       auth_hash['comps'] = comps unless comps == nil
@@ -35,6 +35,7 @@ module Pagoda::Command
       client = SocketIO.connect("http://log.pagodabox.com") do
         before_start do
           on_event('auth_challenge') do
+            puts 'got auth_challenge event'
             emit('authenticate', auth_hash)
           end
 
