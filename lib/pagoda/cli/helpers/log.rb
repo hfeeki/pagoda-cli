@@ -25,7 +25,7 @@ module Pagoda::Command
       auth_hash = {user: user, pass: password, app: app}
       auth_hash['comps'] = comps unless comps == nil
 
-      client = SocketIO.connect("log.pagodabox.com") do
+      client = SocketIO.connect("http://log.pagodabox.com") do
         before_start do
           on_event('auth_challenge') do
             emit('authenticate', auth_hash)
