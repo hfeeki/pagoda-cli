@@ -61,7 +61,7 @@ module Pagoda::Command
           end
 
           on_event('log') do |hash|
-            puts hash['message']
+            puts hash[0]['message']
           end
 
           on_disconnect { puts "Disconnected" }
