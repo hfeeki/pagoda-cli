@@ -49,7 +49,11 @@ module Pagoda::Command
 
           on_event('subscribed') do |hash|
             puts hash
-            puts "#{hash['success'] ? 'successfully subscribed to' : 'failed to subscribe to' } #{hash['comp']}"
+            if hash['success']
+              puts "successfully subscribed to #{hash['comp']}"
+            else
+              puts "failed to subscribe to #{hash['comp']}"
+            end
           end
 
           on_event('unsubscribed') do |hash|
