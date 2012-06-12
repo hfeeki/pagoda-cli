@@ -1,5 +1,5 @@
 desc 'Real time log to your pagodabox application'
-arg_name ''
+arg_name 'Component name'
 command :log do |c|
 
   c.desc 'Component name you want to connect to'

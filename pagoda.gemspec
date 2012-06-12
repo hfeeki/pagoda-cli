@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "pry"
 
+  gem.add_dependency 'socketio-client'
   gem.add_dependency "pagoda-client"
   gem.add_dependency "pagoda-tunnel"
   gem.add_dependency "rest-client"

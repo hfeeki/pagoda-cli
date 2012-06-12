@@ -55,9 +55,6 @@ module Pagoda::Command
 
         end
 
-        after_start do
-          emit("subscribe", [user, password, "log.#{component[:id]}.live"])
-        end
       end
       # else
       #   error "Something went wrong"
@@ -69,8 +66,8 @@ module Pagoda::Command
       if color =  @hash[message.split(' ')[1]]
         puts message.send(color)
       else
-        @hash[message.split(' ')[1]] = next_color
-        retry  
+        puts message.send(@hash[message.split(' ')[1]] = next_color)
+        # retry  
       end
     end
 
