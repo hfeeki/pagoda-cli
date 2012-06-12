@@ -75,7 +75,6 @@ module Pagoda::Command
 
     def colorize message, name
       @hash ||= {}
-      puts name
       if color = @hash[name]
         puts message.send(color)
       else
