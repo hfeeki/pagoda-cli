@@ -4,14 +4,12 @@ module Pagoda::Command
   class Log < Base
 
     COLORS = [
-      'light_black',
       'light_red',
       'light_green',
       'light_yellow',
       'light_blue',
       'light_magenta',
       'light_cyan',
-      'light_white',
       'white',
       'red',
       'yellow',
