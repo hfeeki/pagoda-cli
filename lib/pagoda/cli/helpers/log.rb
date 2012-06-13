@@ -32,6 +32,7 @@ module Pagoda::Command
       auth_hash = {user: user, pass: password, app: app}
       auth_hash['comps'] = [comps] unless comps == nil
       message_block = ->(hash) { colorize hash[0]['message'], hash[0]['name'] }
+      error_block = ->(hash) { error hash[0]['message'] }
 
       @client = SocketIO.connect("http://logvac.pagodabox.com", sync: true) do
 
@@ -44,9 +45,7 @@ module Pagoda::Command
             puts "Successfully Authenticated"
           end
 
-          on_event('error') do |hash|
-            error hash[0]['message']
-          end
+          on_event('error', &error_block)
 
           on_event('subscribed') do |hash|
             if hash[0]['success']
