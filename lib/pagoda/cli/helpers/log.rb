@@ -30,11 +30,10 @@ module Pagoda::Command
 
 
       auth_hash = {user: user, pass: password, app: app}
-      auth_hash['comps'] = comps unless comps == nil
+      auth_hash['comps'] = [comps] unless comps == nil
       message_block = ->(hash) { colorize hash[0]['message'], hash[0]['name'] }
 
-
-      @client = SocketIO.connect("http://log.pagodabox.com:8080", sync: true) do
+      @client = SocketIO.connect("http://logvac.pagodabox.com", sync: true) do
 
         before_start do
           on_event('auth_challenge') do
@@ -71,6 +70,7 @@ module Pagoda::Command
         end
 
       end
+
       [:INT, :TERM].each do |sig|
         Signal.trap(sig) do
           @client.disconnect
@@ -82,9 +82,7 @@ module Pagoda::Command
       end
 
       loop { sleep 1000 }
-      # else
-      #   error "Something went wrong"
-      # end
+
     end
 
     def colorize message, name
