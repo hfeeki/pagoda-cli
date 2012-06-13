@@ -20,16 +20,6 @@ module Pagoda::Command
       ]
 
     def run
-      [:INT, :TERM].each do |sig|
-        Signal.trap(sig) do
-          @client.disconnect
-          puts "Log Closed."
-          puts "-----------------------------------------------"
-          puts
-          exit
-        end
-      end
-
       user_input = options[:component] || args.first
 
       if user_input =~ /^(web\d*)|(db\d*)|(cache\d*)|(worker\d*)$/
@@ -44,7 +34,7 @@ module Pagoda::Command
       message_block = ->(hash) { colorize hash[0]['message'], hash[0]['name'] }
 
 
-      @client = SocketIO.connect("http://log.pagodabox.com:8080") do
+      @client = SocketIO.connect("http://log.pagodabox.com:8080", sync: true) do
 
         before_start do
           on_event('auth_challenge') do
@@ -81,6 +71,17 @@ module Pagoda::Command
         end
 
       end
+      [:INT, :TERM].each do |sig|
+        Signal.trap(sig) do
+          @client.disconnect
+          puts "Log Closed."
+          puts "-----------------------------------------------"
+          puts
+          exit
+        end
+      end
+
+      loop { sleep 1000 }
       # else
       #   error "Something went wrong"
       # end
