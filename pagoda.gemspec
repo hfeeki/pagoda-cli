@@ -22,5 +22,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "pagoda-client"
   gem.add_dependency "pagoda-tunnel"
   gem.add_dependency "rest-client"
-  gem.add_dependency "gli"
+  gem.add_dependency "gli", '~> 2.0.0'
 end

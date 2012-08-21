@@ -5,10 +5,10 @@ require 'rest_client'
 require 'gli'
 
 require 'pagoda/cli/version'
-require 'pagoda/cli/override'
+# require 'pagoda/cli/override'
 
 # command = ARGV.shift.strip rescue 'help'
-include GLI
+include GLI::App
 config_file '.pagodarc'
 
 program_desc 'Command line client for Pagoda Box'
@@ -32,7 +32,7 @@ switch [:h, :help]
 
 require 'pagoda/cli'
 
-GLI::DefaultHelpCommand.skips_pre = true
+# GLI::DefaultHelpCommand.skips_pre = true
 
 pre do |global,command,options,args|
   # Pre logic here
@@ -51,7 +51,7 @@ pre do |global,command,options,args|
     if command and not global[:username] and not global[:password]
       puts "it appears this is the first time you have used our client"
       user, password = Pagoda::Command::Base.ask_for_credentials
-      GLI.run(["-u",user,'-p',password,'initconfig', '--force'])
+      run(["-u",user,'-p',password,'initconfig', '--force'])
       global.merge!(:username => user, :password => password)
     end
 
@@ -102,4 +102,4 @@ on_error do |exception|
   # false
 end
 
-exit GLI.run(ARGV)
+exit run(ARGV)

@@ -1,26 +1,27 @@
 PATH
   remote: .
   specs:
-    pagoda (0.5.0)
+    pagoda (0.6.0)
       gli
       pagoda-client
       pagoda-tunnel
       rest-client
+      socketio-client
 
 GEM
   remote: http://rubygems.org/
   specs:
     coderay (0.9.8)
     diff-lcs (1.1.3)
-    gli (1.3.5)
-    json_pure (1.6.1)
+    gli (2.0.0)
+    json_pure (1.7.4)
     method_source (0.6.7)
       ruby_parser (>= 2.3.1)
-    mime-types (1.17.2)
-    pagoda-client (0.1.3)
+    mime-types (1.19)
+    pagoda-client (0.1.8)
       json_pure
       rest-client
-    pagoda-tunnel (0.1.2)
+    pagoda-tunnel (0.1.3)
       rest-client
     pry (0.9.7.3)
       coderay (~> 0.9.8)
@@ -41,6 +42,8 @@ GEM
       sexp_processor (~> 3.0)
     sexp_processor (3.0.7)
     slop (2.1.0)
+    socketio-client (0.0.3)
+      rest-client
 
 PLATFORMS
   ruby
