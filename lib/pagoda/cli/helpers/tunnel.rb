@@ -18,7 +18,6 @@ module Pagoda::Command
         output_error
       end
       output_error unless component
-      puts component
       if component[:tunnelable]
         type = component[:_type]
         component_id = component[:_id]
