@@ -77,7 +77,11 @@ module Pagoda
     end
 
     def display_name(app)
-      client.app_info(app)[:name]
+      if is_family?(app)
+        api.app_show(app)[:name]
+      else
+        client.app_info(app)[:name]
+      end
     end
 
     def git(args)

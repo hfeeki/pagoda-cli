@@ -1,4 +1,5 @@
 require 'pagoda-client'
+require 'pagoda-api'
 
 module Pagoda
   module Command
@@ -74,6 +75,15 @@ module Pagoda
 
       def client
         @client ||= Pagoda::Client.new(user, password)
+      end
+
+      def api
+        @api ||= Pagoda::Api.new(user, password)
+      end
+
+      def is_family?(app_name)
+        # Family = True, Component = False
+        ((client.app_info(use_app)[:service_type] == :family) rescue true) # TODO: Remove the rescue for production
       end
 
       # protected
@@ -174,13 +184,22 @@ module Pagoda
 
       def loop_transaction(app_name = nil)
         use_app = app_name || app
-        transaction_id = client.app_info(use_app)[:active_transaction_id]
+        family = is_family?(use_app)
+        if family
+          transaction_id = api.app_show(use_app)[:active_transaction_id]
+        else
+          transaction_id = client.app_info(use_app)[:active_transaction_id]
+        end
         if transaction_id
           log_stream_length = 0
           display("",true,0)
           while true
             start = Time.now
-            active = client.transaction_info(use_app, transaction_id)
+            if family
+              active = api.transaction_show(transaction_id)
+            else
+              active = client.transaction_info(use_app, transaction_id)
+            end
             unless active[:log_stream].length == log_stream_length
               display( active[:log_stream][log_stream_length..-1].join("\n"),true,0)
               log_stream_length = active[:log_stream].length
