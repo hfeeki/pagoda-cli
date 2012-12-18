@@ -1,5 +1,5 @@
 require 'pagoda-client'
-require 'pagoda-api'
+# require 'pagoda-api'
 
 module Pagoda
   module Command
