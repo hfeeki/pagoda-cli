@@ -5,6 +5,7 @@ module Pagoda::Command
 
     def run
       user_input = options[:component] || args.first
+      puts self.inspect
       puts user_input
       component = {}
       begin
