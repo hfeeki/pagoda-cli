@@ -8,16 +8,24 @@ module Pagoda::Command
         # api tunnel commands
       else
         user_input = options[:component] || args.first
+        puts user_input
         component = {}
         begin
           if user_input =~ /^(web\d*)|(db\d*)|(cache\d*)|(worker\d*)$/
+            puts "getting list"
             components = client.component_list(app)
+            puts components
             components.delete_if {|x| x[:cuid] != user_input }
+            puts 'filtering components'
             component = components[0]
+            puts component
           else
             component = client.component_info(app, user_input)
+            puts component
           end
-        rescue
+        rescue Exception => e
+          puts e.message
+          puts e.backtrace
           output_error
         end
         output_error unless component
